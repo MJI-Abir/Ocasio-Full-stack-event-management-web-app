@@ -8,12 +8,14 @@ import com.example.event_management_api.model.Registration;
 import com.example.event_management_api.model.User;
 
 public interface RegistrationService {
-    List<Registration> findAll();
-    List<Registration> findByUser(User user);
-    List<Registration> findByEvent(Event event);
-    Optional<Registration> findByUserAndEvent(User user, Event event);
-    boolean existsByUserAndEvent(User user, Event event);
-    Long countByEventId(Long eventId);
-    Registration save(Registration registration);
-    void deleteById(Long id);
+    Registration registerUserForEvent(User user, Event event);
+    void cancelRegistration(Long registrationId);
+    void cancelRegistration(User user, Event event);
+    Optional<Registration> getRegistrationById(Long id);
+    Optional<Registration> getRegistrationByUserAndEvent(User user, Event event);
+    List<Registration> getRegistrationsByUser(User user);
+    List<Registration> getRegistrationsByEvent(Event event);
+    boolean isUserRegisteredForEvent(User user, Event event);
+    long getEventRegistrationCount(Long eventId);
+    void updateAttendance(Long registrationId, boolean attended);
 }
