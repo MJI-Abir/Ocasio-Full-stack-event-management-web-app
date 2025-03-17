@@ -21,12 +21,15 @@ public class Event {
     private Long id;
 
     @Column(nullable = false)
-    private String name;
+    private String title;
 
     @Column(length = 1000)
     private String description;
 
     private String location;
+
+    @Column
+    private int maxAttendees;
 
     @Column(nullable = false)
     private LocalDateTime startTime;
