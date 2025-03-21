@@ -18,7 +18,7 @@ public interface RegistrationRepository extends JpaRepository<Registration, Long
     Optional<Registration> findByUserAndEvent(User user, Event event);
     boolean existsByUserAndEvent(User user, Event event);
 
-    @Query("SELECT COUNT(r) FROM Registration r WHERE r.event = :event")
+    // @Query("SELECT COUNT(r) FROM Registration r WHERE r.event = :event")
     Long countByEventId(Long eventId);
     
 }
