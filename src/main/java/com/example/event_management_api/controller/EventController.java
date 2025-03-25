@@ -6,6 +6,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.example.event_management_api.dto.DtoMapper;
 import com.example.event_management_api.dto.EventCreationDTO;
 import com.example.event_management_api.dto.EventDTO;
+import com.example.event_management_api.dto.PagedResponseDTO;
 import com.example.event_management_api.model.Event;
 import com.example.event_management_api.model.User;
 import com.example.event_management_api.service.EventService;
@@ -71,12 +76,27 @@ public class EventController {
     }
 
     @GetMapping
-    public ResponseEntity<List<EventDTO>> getAllEvents() {
-        List<EventDTO> events = eventService.getAllEvents().stream()
-                                          .map(dtoMapper::toEventDto)
-                                          .collect(Collectors.toList());
-        return ResponseEntity.ok(events);
-    }
+    public ResponseEntity<PagedResponseDTO<EventDTO>> getAllEvents(
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "startTime") String sortBy,
+        @RequestParam(defaultValue = "desc") String direction) 
+        {
+            Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+            Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
+            Page<Event> eventPage = eventService.getAllEvents(pageable);
+
+            List<EventDTO> content = eventPage.getContent().stream().map(dtoMapper::toEventDto).collect(Collectors.toList());
+            PagedResponseDTO<EventDTO> response = new PagedResponseDTO<>(
+            content,
+            eventPage.getNumber(),
+            eventPage.getSize(),
+            eventPage.getTotalElements(),
+            eventPage.getTotalPages(),
+            eventPage.isLast()
+            );
+            return ResponseEntity.ok(response);
+        }
 
     @GetMapping("/{id}")
     public ResponseEntity<EventDTO> getEventById(@PathVariable Long id) {
@@ -86,7 +106,7 @@ public class EventController {
     }
 
     @GetMapping("/upcoming")
-    public ResponseEntity<List<EventDTO>> getUpcomingEvents(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
+    public ResponseEntity<<EventDTO>> getUpcomingEvents(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
             LocalDateTime fromDate) {
         if (fromDate == null) {
             fromDate = LocalDateTime.now();

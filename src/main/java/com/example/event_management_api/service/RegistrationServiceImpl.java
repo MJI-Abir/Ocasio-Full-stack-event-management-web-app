@@ -1,10 +1,10 @@
 package com.example.event_management_api.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,7 +17,6 @@ public class RegistrationServiceImpl implements RegistrationService {
     private final RegistrationRepository registrationRepository;
     private final EventService eventService;
 
-    @Autowired
     public RegistrationServiceImpl(RegistrationRepository registrationRepository, EventService eventService) {
         this.registrationRepository = registrationRepository;
         this.eventService = eventService;
@@ -71,14 +70,14 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Registration> getRegistrationsByUser(User user) {
-        return registrationRepository.findByUser(user);
+    public Page<Registration> getRegistrationsByUser(User user, Pageable pageable) {
+        return registrationRepository.findByUser(user, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Registration> getRegistrationsByEvent(Event event) {
-        return registrationRepository.findByEvent(event);
+    public Page<Registration> getRegistrationsByEvent(Event event, Pageable pageable) {
+        return registrationRepository.findByEvent(event, pageable);
     }
 
     @Override

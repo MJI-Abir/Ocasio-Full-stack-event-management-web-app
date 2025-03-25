@@ -1,10 +1,10 @@
 package com.example.event_management_api.service;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,7 +18,6 @@ public class EventServiceImpl implements EventService{
     private final EventRepository eventRepository;
     private final RegistrationRepository registrationRepository;
 
-    @Autowired
     public EventServiceImpl(EventRepository eventRepository, RegistrationRepository registrationRepository) {
         this.registrationRepository = registrationRepository;
         this.eventRepository = eventRepository;
@@ -40,8 +39,8 @@ public class EventServiceImpl implements EventService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<Event> getAllEvents() {
-        return eventRepository.findAll();
+    public Page<Event> getAllEvents(Pageable pageable) {
+        return eventRepository.findAll(pageable);
     }
     
     @Override
@@ -52,20 +51,20 @@ public class EventServiceImpl implements EventService{
 
     @Override
     @Transactional(readOnly = true)
-    public List<Event> getEventsByCreator(User creator) {
-        return eventRepository.findByCreator(creator);
+    public Page<Event> getEventsByCreator(User creator, Pageable pageable) {
+        return eventRepository.findByCreator(creator, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Event> getUpcomingEvents(LocalDateTime fromDate) {
-        return eventRepository.findByStartTimeAfter(fromDate);
+    public Page<Event> getUpcomingEvents(LocalDateTime fromDate, Pageable pageable) {
+        return eventRepository.findByStartTimeAfter(fromDate, pageable);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<Event> searchEvents(String keyword) {
-        return eventRepository.findByTitleContainingIgnoreCase(keyword);
+    public Page<Event> searchEvents(String keyword, Pageable pageable) {
+        return eventRepository.findByTitleContainingIgnoreCase(keyword, pageable);
     }
 
     @Override
