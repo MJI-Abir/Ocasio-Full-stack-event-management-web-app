@@ -6,6 +6,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -106,35 +107,69 @@ public class EventController {
     }
 
     @GetMapping("/upcoming")
-    public ResponseEntity<<EventDTO>> getUpcomingEvents(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
-            LocalDateTime fromDate) {
-        if (fromDate == null) {
-            fromDate = LocalDateTime.now();
+    public ResponseEntity<PagedResponseDTO<EventDTO>> getUpcomingEvents(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) 
+            LocalDateTime fromDate, @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "startTime") String sortBy,
+        @RequestParam(defaultValue = "desc") String direction) {
+            Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+            Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
+            Page<Event> upcomingEventPage = eventService.getUpcomingEvents(fromDate, pageable);
+            List<EventDTO> content = upcomingEventPage.getContent().stream().map(dtoMapper::toEventDto).collect(Collectors.toList());
+            PagedResponseDTO<EventDTO> response = new PagedResponseDTO<>(
+                content,
+                upcomingEventPage.getNumber(),
+                upcomingEventPage.getSize(),
+                upcomingEventPage.getTotalElements(),
+                upcomingEventPage.getTotalPages(),
+                upcomingEventPage.isLast()
+            );
+            return ResponseEntity.ok(response);
         }
-        List<EventDTO> events = eventService.getUpcomingEvents(fromDate).stream()
-                                          .map(dtoMapper::toEventDto)
-                                          .collect(Collectors.toList());
-        return ResponseEntity.ok(events);
-    }
 
     @GetMapping("/search")
-    public ResponseEntity<List<EventDTO>> searchEvents(@RequestParam String keyword) {
-        List<EventDTO> events = eventService.searchEvents(keyword).stream()
-                                          .map(dtoMapper::toEventDto)
-                                          .collect(Collectors.toList());
-        return ResponseEntity.ok(events);
+    public ResponseEntity<PagedResponseDTO<EventDTO>> searchEvents(@RequestParam String keyword, @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "startTime") String sortBy,
+        @RequestParam(defaultValue = "desc") String direction) {
+            Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+            Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
+            Page<Event> resultEventPage = eventService.searchEvents(keyword, pageable);
+            List<EventDTO> content = resultEventPage.getContent().stream().map(dtoMapper::toEventDto).collect(Collectors.toList());
+            PagedResponseDTO<EventDTO> response = new PagedResponseDTO<>(
+                content,
+                resultEventPage.getNumber(),
+                resultEventPage.getSize(),
+                resultEventPage.getTotalElements(),
+                resultEventPage.getTotalPages(),
+                resultEventPage.isLast()
+            );
+            return ResponseEntity.ok(response);
     }
 
     @GetMapping("/creator/{creatorId}")
-    public ResponseEntity<List<EventDTO>> getEventsByCreator(@PathVariable Long creatorId) {
+    public ResponseEntity<PagedResponseDTO<EventDTO>> getEventsByCreator(@PathVariable Long creatorId, 
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "startTime") String sortBy,
+        @RequestParam(defaultValue = "desc") String direction) {
         Optional<User> creatorOpt = userService.getUserById(creatorId);
         if (creatorOpt.isEmpty()) {
             return ResponseEntity.badRequest().build();
         }
-        List<EventDTO> events = eventService.getEventsByCreator(creatorOpt.get()).stream()
-                                          .map(dtoMapper::toEventDto)
-                                          .collect(Collectors.toList());
-        return ResponseEntity.ok(events);
+        Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
+        Page<Event> creatorsEventPage = eventService.getEventsByCreator(creatorOpt.get(), pageable);
+        List<EventDTO> content = creatorsEventPage.getContent().stream().map(dtoMapper::toEventDto).collect(Collectors.toList());
+        PagedResponseDTO<EventDTO> response = new PagedResponseDTO<>(
+                content,
+                creatorsEventPage.getNumber(),
+                creatorsEventPage.getSize(),
+                creatorsEventPage.getTotalElements(),
+                creatorsEventPage.getTotalPages(),
+                creatorsEventPage.isLast()
+            );
+        return ResponseEntity.ok(response);
     }
 
     @PutMapping("/{id}")

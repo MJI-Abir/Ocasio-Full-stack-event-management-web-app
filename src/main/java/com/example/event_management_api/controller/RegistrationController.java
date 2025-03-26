@@ -5,6 +5,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -29,6 +33,8 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import com.example.event_management_api.dto.PagedResponseDTO;
 
 
 @RestController
@@ -74,34 +80,60 @@ public class RegistrationController {
     }
 
     @GetMapping("/user/{userId}")
-    public ResponseEntity<List<RegistrationDTO>> getRegistrationsByUser(@PathVariable Long userId) {
+    public ResponseEntity<PagedResponseDTO<RegistrationDTO>> getRegistrationsByUser(
+        @PathVariable Long userId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "startTime") String sortBy,
+        @RequestParam(defaultValue = "desc") String direction) {
         Optional<User> userOpt = userService.getUserById(userId);
         if (userOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
-        
-        List<RegistrationDTO> registrations = registrationService.getRegistrationsByUser(userOpt.get())
-                .stream()
-                .map(dtoMapper::toRegistrationDto)
-                .collect(Collectors.toList());
-        
-        return ResponseEntity.ok(registrations);
+        Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
+        Page<Registration> registrationPage = registrationService.getRegistrationsByUser(userOpt.get(), pageable);
+        List<RegistrationDTO> content = registrationPage.getContent().stream().map(dtoMapper::toRegistrationDto).collect(Collectors.toList());
+
+        PagedResponseDTO<RegistrationDTO> response = new PagedResponseDTO<>(
+            content,
+            registrationPage.getNumber(),
+            registrationPage.getSize(),
+            registrationPage.getTotalElements(),
+            registrationPage.getTotalPages(),
+            registrationPage.isLast()
+        );
+        return ResponseEntity.ok(response);
 
     }
 
     @GetMapping("/event/{eventId}")
-    public ResponseEntity<List<RegistrationDTO>> getRegistrationsByEvent(@PathVariable Long eventId) {
+    public ResponseEntity<PagedResponseDTO<RegistrationDTO>> getRegistrationsByEvent(
+        @PathVariable Long eventId,
+        @RequestParam(defaultValue = "0") int page,
+        @RequestParam(defaultValue = "10") int size,
+        @RequestParam(defaultValue = "startTime") String sortBy,
+        @RequestParam(defaultValue = "desc") String direction) {
         Optional<Event> eventOpt = eventService.getEventById(eventId);
         if (eventOpt.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 
-        List<RegistrationDTO> registrations = registrationService.getRegistrationsByEvent(eventOpt.get())
-                .stream()
-                .map(dtoMapper::toRegistrationDto)
-                .collect(Collectors.toList());
+        Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
+        Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
 
-        return ResponseEntity.ok(registrations);
+        Page<Registration> eventRegistrationPage = registrationService.getRegistrationsByEvent(eventOpt.get(), pageable);
+        List<RegistrationDTO> content = eventRegistrationPage.getContent().stream().map(dtoMapper::toRegistrationDto).collect(Collectors.toList());
+
+        PagedResponseDTO<RegistrationDTO> response = new PagedResponseDTO<>(
+            content,
+            eventRegistrationPage.getNumber(),
+            eventRegistrationPage.getSize(),
+            eventRegistrationPage.getTotalElements(),
+            eventRegistrationPage.getTotalPages(),
+            eventRegistrationPage.isLast()
+        );
+        return ResponseEntity.ok(response);
                 
     }
 
