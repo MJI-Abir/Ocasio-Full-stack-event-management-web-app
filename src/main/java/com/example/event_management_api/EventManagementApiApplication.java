@@ -11,3 +11,4 @@ public class EventManagementApiApplication {
 	}
 
 }
+// changed git config email to match github account
