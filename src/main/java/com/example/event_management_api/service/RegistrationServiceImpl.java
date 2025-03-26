@@ -1,6 +1,7 @@
 package com.example.event_management_api.service;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -16,10 +17,12 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     private final RegistrationRepository registrationRepository;
     private final EventService eventService;
+    private final EmailService emailService;
 
-    public RegistrationServiceImpl(RegistrationRepository registrationRepository, EventService eventService) {
+    public RegistrationServiceImpl(RegistrationRepository registrationRepository, EventService eventService, EmailService emailService) {
         this.registrationRepository = registrationRepository;
         this.eventService = eventService;
+        this.emailService = emailService;
     }
 
     // Implement the methods of the RegistrationService interface
@@ -40,6 +43,15 @@ public class RegistrationServiceImpl implements RegistrationService {
         registration.setEvent(event);
         registration.setRegistrationTime(LocalDateTime.now());
         registration.setAttended(false);
+
+        // Send confirmation email
+        emailService.sendRegistrationConfirmation(
+            user.getEmail(),
+            user.getName(),
+            event.getTitle(),
+            event.getStartTime().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")),
+            event.getLocation()
+        );
         return registrationRepository.save(registration);
     }
 

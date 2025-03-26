@@ -17,5 +17,5 @@ public interface EventRepository extends JpaRepository<Event, Long> {
     Page<Event> findByCreator(User creator, Pageable pageable);
     Page<Event> findByStartTimeAfter(LocalDateTime date, Pageable pageable);
     Page<Event> findByTitleContainingIgnoreCase(String keyword, Pageable pageable);
-    
+    List<Event> findByStartTimeAfterAndStartTimeBefore(LocalDateTime start, LocalDateTime end);
 }
