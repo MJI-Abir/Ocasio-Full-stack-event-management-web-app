@@ -21,7 +21,7 @@ interface UserEvent {
   id: number;
   title: string;
   startTime: string;
-  endTime: string;
+  endTime: string | null;
   location: string;
   registrationCount: number;
   maxAttendees: number;
@@ -37,6 +37,15 @@ interface UserTicket {
   };
   registrationDate: string;
   status: "CONFIRMED" | "PENDING" | "CANCELLED";
+}
+
+// API response types
+interface PagedResponse<T> {
+  content: T[];
+  totalPages: number;
+  totalElements: number;
+  size: number;
+  number: number;
 }
 
 export default function ProfilePage() {
@@ -59,15 +68,15 @@ export default function ProfilePage() {
       setIsLoading(true);
       try {
         const token = Cookies.get("token");
-        const userId = Cookies.get("userId");
 
-        if (!token || !userId) {
+        if (!token) {
           router.push("/login");
           return;
         }
 
+        // Get current user profile from API
         const response = await axios.get<User>(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/users/${userId}`,
+          `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -113,8 +122,8 @@ export default function ProfilePage() {
             return;
           }
 
-          const response = await axios.get<UserEvent[]>(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/events/creator/${user.id}`,
+          const response = await axios.get<PagedResponse<UserEvent>>(
+            `${process.env.NEXT_PUBLIC_API_URL}/events/creator/${user.id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -147,8 +156,8 @@ export default function ProfilePage() {
             return;
           }
 
-          const response = await axios.get<UserTicket[]>(
-            `${process.env.NEXT_PUBLIC_API_URL}/api/registrations/user/${user.id}`,
+          const response = await axios.get<PagedResponse<UserTicket>>(
+            `${process.env.NEXT_PUBLIC_API_URL}/registrations/user/${user.id}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
