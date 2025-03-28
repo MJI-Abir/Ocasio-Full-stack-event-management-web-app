@@ -39,3 +39,4 @@ src/main/resources/application.properties
 
 ### Environment Files ###
 .env
+node_modules/
