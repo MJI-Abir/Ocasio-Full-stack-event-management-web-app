@@ -110,7 +110,7 @@ public class EventController {
             LocalDateTime fromDate, @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
         @RequestParam(defaultValue = "startTime") String sortBy,
-        @RequestParam(defaultValue = "desc") String direction) {
+        @RequestParam(defaultValue = "asc") String direction) {
             Sort.Direction dir = direction.equalsIgnoreCase("asc") ? Sort.Direction.ASC : Sort.Direction.DESC;
             Pageable pageable = PageRequest.of(page, size, Sort.by(dir, sortBy));
             Page<Event> upcomingEventPage = eventService.getUpcomingEvents(fromDate, pageable);
