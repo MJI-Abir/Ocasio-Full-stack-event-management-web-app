@@ -229,7 +229,7 @@ export default function HomePage() {
 
         // Fetch upcoming events
         const response = await axios.get<PagedResponse<Event>>(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/events/upcoming`,
+          `${process.env.NEXT_PUBLIC_API_URL}/events/upcoming`,
           {
             params: {
               page: page,
@@ -247,7 +247,7 @@ export default function HomePage() {
 
         // Also fetch some featured events (newest ones)
         const featuredResponse = await axios.get<PagedResponse<Event>>(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/events?page=0&size=3&sortBy=startTime&direction=asc`,
+          `${process.env.NEXT_PUBLIC_API_URL}/events?page=0&size=3&sortBy=startTime&direction=asc`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
