@@ -129,7 +129,6 @@ const getCategoryIcon = (category: string) => {
   }
 };
 
-
 export default function HomePage() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
@@ -279,7 +278,7 @@ export default function HomePage() {
             <p className="text-gray-300 mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md transition-colors duration-200"
+              className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md transition-colors duration-200 cursor-pointer"
             >
               Try Again
             </button>
@@ -338,7 +337,7 @@ export default function HomePage() {
               >
                 <Link href="/events/create">
                   <motion.button
-                    className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-gray-900 font-medium rounded-lg shadow-lg transition-all duration-300 flex items-center"
+                    className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-gray-900 font-medium rounded-lg shadow-lg transition-all duration-300 flex items-center cursor-pointer"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -360,7 +359,7 @@ export default function HomePage() {
 
                 <Link href="/dashboard">
                   <motion.button
-                    className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium rounded-lg shadow-lg transition-all duration-300 border border-gray-600 flex items-center"
+                    className="px-6 py-3 bg-gray-700 hover:bg-gray-600 text-gray-200 font-medium rounded-lg shadow-lg transition-all duration-300 border border-gray-600 flex items-center cursor-pointer"
                     whileHover={{ scale: 1.05 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -516,7 +515,7 @@ export default function HomePage() {
                   href={`/events/search?keyword=${category.toLowerCase()}`}
                 >
                   <motion.div
-                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 text-center transition-all duration-200 h-full flex flex-col items-center justify-center group"
+                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 text-center transition-all duration-200 h-full flex flex-col items-center justify-center group cursor-pointer"
                     whileHover={{
                       scale: 1.05,
                       boxShadow:
@@ -562,7 +561,7 @@ export default function HomePage() {
                 className="flex-grow py-3 px-4 bg-gray-700 text-white rounded-lg border border-gray-600 focus:outline-none focus:ring-2 focus:ring-teal-500"
               />
               <motion.button
-                className="bg-teal-500 hover:bg-teal-600 text-gray-900 font-medium py-3 px-6 rounded-lg"
+                className="bg-teal-500 hover:bg-teal-600 text-gray-900 font-medium py-3 px-6 rounded-lg cursor-pointer"
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.98 }}
               >
