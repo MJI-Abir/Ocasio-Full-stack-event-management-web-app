@@ -1,15 +1,25 @@
-import { motion } from "framer-motion";
-import React, { ButtonHTMLAttributes } from "react";
+import { motion, HTMLMotionProps } from "framer-motion";
+import React, { ButtonHTMLAttributes, ReactNode } from "react";
 
-interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
+type ButtonMotionProps = HTMLMotionProps<"button">;
+
+interface ButtonProps
+  extends Omit<
+    ButtonHTMLAttributes<HTMLButtonElement>,
+    keyof ButtonMotionProps
+  > {
   variant?: "primary" | "secondary";
   isLoading?: boolean;
+  children?: ReactNode;
 }
 
-const Button: React.FC<ButtonProps> = ({
+type CombinedButtonProps = ButtonProps & ButtonMotionProps;
+
+const Button: React.FC<CombinedButtonProps> = ({
   children,
   variant = "primary",
   isLoading = false,
+  disabled,
   ...props
 }) => {
   const baseStyles =
@@ -27,7 +37,7 @@ const Button: React.FC<ButtonProps> = ({
       className={`${baseStyles} ${variantStyles[variant]} ${
         isLoading ? "opacity-70 cursor-not-allowed" : ""
       }`}
-      disabled={isLoading || props.disabled}
+      disabled={isLoading || disabled}
       whileHover={{ scale: isLoading ? 1 : 1.02 }}
       whileTap={{ scale: isLoading ? 1 : 0.98 }}
       {...props}

@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.data.web.SpringDataWebProperties;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -125,7 +124,7 @@ public class EventController {
                 upcomingEventPage.isLast()
             );
             return ResponseEntity.ok(response);
-        }
+    }
 
     @GetMapping("/search")
     public ResponseEntity<PagedResponseDTO<EventDTO>> searchEvents(@RequestParam String keyword, @RequestParam(defaultValue = "0") int page,

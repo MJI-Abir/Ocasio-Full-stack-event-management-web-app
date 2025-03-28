@@ -58,7 +58,8 @@ public class EventServiceImpl implements EventService{
     @Override
     @Transactional(readOnly = true)
     public Page<Event> getUpcomingEvents(LocalDateTime fromDate, Pageable pageable) {
-        return eventRepository.findByStartTimeAfter(fromDate, pageable);
+        LocalDateTime effectiveFromDate = (fromDate != null) ? fromDate : LocalDateTime.now();
+        return eventRepository.findByStartTimeAfter(effectiveFromDate, pageable);
     }
 
     @Override
