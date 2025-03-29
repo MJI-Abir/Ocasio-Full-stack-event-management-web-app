@@ -41,12 +41,19 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.1, duration: 0.5 }}
       whileHover={{
-        y: -5,
+        y: -10,
         boxShadow:
-          "0 15px 30px -10px rgba(0, 0, 0, 0.3), 0 5px 15px -5px rgba(45, 212, 191, 0.1)",
+          "0 20px 40px -15px rgba(0, 0, 0, 0.4), 0 10px 20px -10px rgba(45, 212, 191, 0.2)",
+        borderColor: "rgba(255, 255, 255, 0.2)",
       }}
     >
-      <div className={`h-2 bg-gradient-to-r ${cardColor} w-full`}></div>
+      <div
+        className={`h-2 bg-gradient-to-r ${cardColor} w-full transition-all duration-300`}
+        style={{
+          height: "8px",
+          transition: "height 0.3s ease-in-out",
+        }}
+      ></div>
       <div className="p-6 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-xl font-bold gradient-text line-clamp-2">
@@ -153,7 +160,10 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
         <Link href={`/events/${event.id}`} className="w-full">
           <motion.button
             className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary-light hover:to-secondary-light text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 cursor-pointer"
-            whileHover={{ scale: 1.03 }}
+            whileHover={{
+              scale: 1.03,
+              boxShadow: "0 5px 10px rgba(0, 0, 0, 0.2)",
+            }}
             whileTap={{ scale: 0.97 }}
           >
             View Details

@@ -141,7 +141,7 @@ export default function SearchResultsPage() {
             <p className="text-gray-300 mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md transition-colors duration-200"
+              className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md transition-colors duration-200 cursor-pointer"
             >
               Try Again
             </button>

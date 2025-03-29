@@ -35,11 +35,13 @@ const Button: React.FC<CombinedButtonProps> = ({
   return (
     <motion.button
       className={`${baseStyles} ${variantStyles[variant]} ${
-        isLoading ? "opacity-70 cursor-not-allowed" : ""
+        isLoading || disabled
+          ? "opacity-70 cursor-not-allowed"
+          : "cursor-pointer"
       }`}
       disabled={isLoading || disabled}
-      whileHover={{ scale: isLoading ? 1 : 1.02 }}
-      whileTap={{ scale: isLoading ? 1 : 0.98 }}
+      whileHover={{ scale: isLoading || disabled ? 1 : 1.02 }}
+      whileTap={{ scale: isLoading || disabled ? 1 : 0.98 }}
       {...props}
     >
       {isLoading ? (

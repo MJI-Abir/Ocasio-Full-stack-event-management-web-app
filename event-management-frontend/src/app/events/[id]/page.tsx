@@ -10,6 +10,8 @@ import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import Image from "next/image";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function EventDetailsPage() {
   const params = useParams();
@@ -102,15 +104,20 @@ export default function EventDetailsPage() {
     setIsRegistering(true);
     try {
       const token = Cookies.get("token");
-      const userId = Cookies.get("userId"); // Assuming you store userId in cookies
+      console.log("Token from cookies:", token);
+      const userId = Cookies.get("userId");
+      console.log("User ID from cookies:", userId);
 
       if (!token || !userId) {
+        console.log("No token or userId found, redirecting to login");
         router.push("/login");
         return;
       }
 
       await axios.post(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/registrations/user/${userId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/registrations/user/${parseInt(
+          userId
+        )}`,
         {
           eventId: event.id,
         },
@@ -121,9 +128,22 @@ export default function EventDetailsPage() {
         }
       );
 
+      // Show toast notification
+      toast.success(
+        "Registration successful! A confirmation email has been sent to your address.",
+        {
+          position: "top-center",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        }
+      );
+
       // Refresh event details to update registration count
       const response = await axios.get<Event>(
-        `${process.env.NEXT_PUBLIC_API_URL}/api/events/${eventId}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -133,7 +153,10 @@ export default function EventDetailsPage() {
       setEvent(response.data);
     } catch (err) {
       console.error("Error registering for event:", err);
-      setError("Failed to register for event. Please try again later.");
+      toast.error("Failed to register for event. Please try again later.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
     } finally {
       setIsRegistering(false);
     }
@@ -202,7 +225,7 @@ export default function EventDetailsPage() {
             <p className="text-gray-300 mb-4">{error}</p>
             <button
               onClick={() => window.location.reload()}
-              className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md transition-colors duration-200"
+              className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-md transition-colors duration-200 cursor-pointer"
             >
               Try Again
             </button>
@@ -238,6 +261,7 @@ export default function EventDetailsPage() {
       variants={containerVariants}
     >
       <Header />
+      <ToastContainer theme="dark" />
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Event Header */}
@@ -308,7 +332,7 @@ export default function EventDetailsPage() {
                   className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
                     event.isFull
                       ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                      : "bg-teal-500 hover:bg-teal-600 text-white"
+                      : "bg-teal-500 hover:bg-teal-600 text-white cursor-pointer"
                   }`}
                 >
                   {isRegistering ? (
@@ -413,7 +437,7 @@ export default function EventDetailsPage() {
             <div className="absolute inset-0 flex items-center justify-between p-4">
               <motion.button
                 onClick={prevImage}
-                className="w-12 h-12 rounded-full bg-black bg-opacity-30 flex items-center justify-center text-white hover:bg-opacity-50 transition-all duration-200"
+                className="w-12 h-12 rounded-full bg-black bg-opacity-30 flex items-center justify-center text-white hover:bg-opacity-50 transition-all duration-200 cursor-pointer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -434,7 +458,7 @@ export default function EventDetailsPage() {
               </motion.button>
               <motion.button
                 onClick={nextImage}
-                className="w-12 h-12 rounded-full bg-black bg-opacity-30 flex items-center justify-center text-white hover:bg-opacity-50 transition-all duration-200"
+                className="w-12 h-12 rounded-full bg-black bg-opacity-30 flex items-center justify-center text-white hover:bg-opacity-50 transition-all duration-200 cursor-pointer"
                 whileHover={{ scale: 1.1 }}
                 whileTap={{ scale: 0.9 }}
               >
@@ -461,7 +485,7 @@ export default function EventDetailsPage() {
                 <button
                   key={index}
                   onClick={() => setCurrentImageIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                  className={`w-3 h-3 rounded-full transition-all duration-200 cursor-pointer ${
                     index === currentImageIndex
                       ? "bg-white scale-125"
                       : "bg-white bg-opacity-50"
@@ -554,27 +578,57 @@ export default function EventDetailsPage() {
                 Share Event
               </h2>
               <div className="flex space-x-4">
-                {["facebook", "twitter", "linkedin"].map((social) => (
-                  <motion.button
-                    key={social}
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.9 }}
-                    className="w-10 h-10 rounded-full bg-gray-700 hover:bg-teal-500 flex items-center justify-center transition-colors duration-200"
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-10 h-10 rounded-full bg-gray-700 hover:bg-blue-600 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                  aria-label="Share on Facebook"
+                >
+                  <svg
+                    className="h-5 w-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
                   >
-                    <svg
-                      className="h-5 w-5 text-white"
-                      fill="currentColor"
-                      viewBox="0 0 24 24"
-                      aria-hidden="true"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                  </motion.button>
-                ))}
+                    <path
+                      fillRule="evenodd"
+                      d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-10 h-10 rounded-full bg-gray-700 hover:bg-sky-500 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                  aria-label="Share on Twitter"
+                >
+                  <svg
+                    className="h-5 w-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                  </svg>
+                </motion.button>
+
+                <motion.button
+                  whileHover={{ scale: 1.1 }}
+                  whileTap={{ scale: 0.9 }}
+                  className="w-10 h-10 rounded-full bg-gray-700 hover:bg-blue-700 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                  aria-label="Share on LinkedIn"
+                >
+                  <svg
+                    className="h-5 w-5 text-white"
+                    fill="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                  </svg>
+                </motion.button>
               </div>
             </div>
           </motion.div>

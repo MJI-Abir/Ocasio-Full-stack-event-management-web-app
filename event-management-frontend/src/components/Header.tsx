@@ -1,15 +1,33 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import useAuth from "@/hooks/useAuth";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 
 const Header = () => {
   const { logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // Close dropdown when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   return (
     <motion.header
-      className="bg-gray-900 border-b border-gray-800 shadow-lg"
+      className="bg-gray-900 border-b border-gray-800 shadow-lg relative z-50"
       initial={{ y: -100 }}
       animate={{ y: 0 }}
       transition={{ type: "spring", stiffness: 100 }}
@@ -24,7 +42,7 @@ const Header = () => {
             </div>
           </div>
           <div className="flex items-center">
-            <div className="relative">
+            <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setDropdownOpen(!dropdownOpen)}
                 className="text-gray-300 hover:text-teal-400 p-2 rounded-md text-sm font-medium transition-colors duration-200 flex items-center cursor-pointer"
@@ -45,7 +63,7 @@ const Header = () => {
                 </svg>
               </button>
               {dropdownOpen && (
-                <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 z-10 border border-gray-700">
+                <div className="absolute right-0 mt-2 w-48 bg-gray-800 rounded-md shadow-lg py-1 z-50 border border-gray-700">
                   <Link
                     href="/profile"
                     className="flex items-center px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-teal-400 transition-colors duration-200 cursor-pointer"
@@ -69,7 +87,12 @@ const Header = () => {
                   </Link>
                   <button
                     onClick={() => {
-                      logout();
+                      const confirmLogout = window.confirm(
+                        "Are you sure you want to logout?"
+                      );
+                      if (confirmLogout) {
+                        logout();
+                      }
                       setDropdownOpen(false);
                     }}
                     className="flex items-center w-full text-left px-4 py-2 text-sm text-gray-300 hover:bg-gray-700 hover:text-teal-400 transition-colors duration-200 cursor-pointer"
