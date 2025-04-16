@@ -1,9 +1,9 @@
 import api from "./api";
+import axios from "axios";
 import {
   LoginRequest,
   RegisterRequest,
   AuthResponse,
-  User,
 } from "@/types/auth";
 import Cookies from "js-cookie";
 
@@ -16,10 +16,26 @@ const AUTH_ENDPOINTS = {
 // Helper function to fetch current user and save userId to cookie
 const fetchAndSaveCurrentUser = async (): Promise<void> => {
   try {
-    const response = await api.get<User>(AUTH_ENDPOINTS.CURRENT_USER);
+    // Make sure API has the auth token set
+    const token = Cookies.get('token');
+    if (!token) {
+      console.error("No auth token available");
+      return;
+    }
+    
+    const response = await axios.get(
+      `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
+      {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    console.log("User data fetched:", response.data);
+
     const user = response.data;
 
-    if (user && user.id) {
+    if (user?.id) {
       // Store user ID in cookies
       Cookies.set("userId", user.id.toString(), { expires: 7 }); // 7 days expiry
     }

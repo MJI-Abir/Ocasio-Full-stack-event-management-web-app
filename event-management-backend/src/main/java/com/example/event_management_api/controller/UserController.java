@@ -42,13 +42,15 @@ public class UserController {
     @GetMapping("/me")
     public ResponseEntity<UserDTO> getCurrentUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String email = authentication.getName();
-        
-        Optional<User> userOpt = userService.getUserByEmail(email);
-        System.out.println("User: " + userOpt);
-        return userOpt
-                .map(user -> ResponseEntity.ok(dtoMapper.toUserDto(user)))
-                .orElse(ResponseEntity.status(HttpStatus.UNAUTHORIZED).build());
+        if (authentication != null && authentication.isAuthenticated() && 
+            !authentication.getPrincipal().equals("anonymousUser")) {
+            String userEmail = authentication.getName();
+            Optional<User> userOpt = userService.getUserByEmail(userEmail);
+            
+            return userOpt.map(user -> ResponseEntity.ok(dtoMapper.toUserDto(user)))
+                         .orElse(ResponseEntity.status(HttpStatus.NOT_FOUND).build());
+        }
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).build();
     }
 
     // create a new user

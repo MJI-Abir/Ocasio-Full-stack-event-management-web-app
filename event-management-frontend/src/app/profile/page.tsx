@@ -117,10 +117,10 @@ export default function ProfilePage() {
         try {
           const token = Cookies.get("token");
 
-          if (!token) {
-            router.push("/login");
-            return;
-          }
+          // if (!token) {
+          //   router.push("/login");
+          //   return;
+          // }
 
           const response = await axios.get<PagedResponse<UserEvent>>(
             `${process.env.NEXT_PUBLIC_API_URL}/events/creator/${user.id}`,
