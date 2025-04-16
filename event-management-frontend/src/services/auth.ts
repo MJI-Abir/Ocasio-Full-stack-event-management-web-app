@@ -38,6 +38,7 @@ const fetchAndSaveCurrentUser = async (): Promise<void> => {
     if (user?.id) {
       // Store user ID in cookies
       Cookies.set("userId", user.id.toString(), { expires: 7 }); // 7 days expiry
+      console.log("User ID saved to cookies:", user.id);
     }
   } catch (error) {
     console.error("Error fetching user data:", error);

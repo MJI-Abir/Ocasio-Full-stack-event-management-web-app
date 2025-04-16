@@ -84,7 +84,7 @@ public class RegistrationController {
         @PathVariable Long userId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
-        @RequestParam(defaultValue = "startTime") String sortBy,
+        @RequestParam(defaultValue = "registrationTime") String sortBy,
         @RequestParam(defaultValue = "desc") String direction) {
         Optional<User> userOpt = userService.getUserById(userId);
         if (userOpt.isEmpty()) {
@@ -112,7 +112,7 @@ public class RegistrationController {
         @PathVariable Long eventId,
         @RequestParam(defaultValue = "0") int page,
         @RequestParam(defaultValue = "10") int size,
-        @RequestParam(defaultValue = "startTime") String sortBy,
+        @RequestParam(defaultValue = "registrationTime") String sortBy,
         @RequestParam(defaultValue = "desc") String direction) {
         Optional<Event> eventOpt = eventService.getEventById(eventId);
         if (eventOpt.isEmpty()) {
