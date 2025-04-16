@@ -511,7 +511,7 @@ export default function ProfilePage() {
               ].map((tab) => (
                 <motion.button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as any)}
+                  onClick={() => setActiveTab(tab.id as "profile" | "events" | "tickets")}
                   variants={tabVariants}
                   initial="inactive"
                   animate={activeTab === tab.id ? "active" : "inactive"}
@@ -839,7 +839,7 @@ export default function ProfilePage() {
                     No Events Found
                   </h3>
                   <p className="text-gray-400 mb-6">
-                    You haven't created any events yet.
+                    You haven&apos;t created any events yet.
                   </p>
                   <Link href="/events/create">
                     <motion.button
@@ -1010,7 +1010,7 @@ export default function ProfilePage() {
                     No Tickets Found
                   </h3>
                   <p className="text-gray-400 mb-6">
-                    You haven't registered for any events yet.
+                    You haven&apos;t registered for any events yet.
                   </p>
                   <Link href="/events">
                     <motion.button
