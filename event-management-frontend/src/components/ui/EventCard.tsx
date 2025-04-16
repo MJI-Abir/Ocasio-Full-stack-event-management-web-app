@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow, format } from "date-fns";
 import Link from "next/link";
+import Image from "next/image";
 import { Event } from "@/services/event";
 
 interface EventCardProps {
@@ -13,6 +14,12 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
   const startDate = new Date(event.startTime);
   const formattedDate = format(startDate, "MMM d, yyyy");
   const timeFromNow = formatDistanceToNow(startDate, { addSuffix: true });
+
+  // Get the first image if available, otherwise use a placeholder
+  const imageUrl =
+    event.images && event.images.length > 0
+      ? event.images[0].imageUrl
+      : "https://source.unsplash.com/random/800x600/?event,conference";
 
   // Convert event title to a predictable color based on title text
   const getColorClass = (title: string) => {
@@ -54,6 +61,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
           transition: "height 0.3s ease-in-out",
         }}
       ></div>
+
+      {/* Event Image */}
+      <div className="relative w-full h-40">
+        <Image
+          src={imageUrl}
+          alt={`${event.title} preview`}
+          fill
+          className="object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+        />
+      </div>
+
       <div className="p-6 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-xl font-bold gradient-text line-clamp-2">

@@ -1,6 +1,8 @@
 package com.example.event_management_api.dto;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -20,5 +22,5 @@ public class EventDTO {
     private UserDTO creator;
     private long registrationCount;
     private boolean isFull;
-    
+    private List<ImageDTO> images = new ArrayList<>();
 }

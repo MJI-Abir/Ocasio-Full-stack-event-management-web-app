@@ -4,20 +4,27 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.example.event_management_api.model.Event;
+import com.example.event_management_api.model.Image;
 import com.example.event_management_api.model.Registration;
 import com.example.event_management_api.model.User;
 import com.example.event_management_api.service.EventService;
+import com.example.event_management_api.service.ImageService;
 import com.example.event_management_api.service.RegistrationService;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Component
 public class DtoMapper {
     private final EventService eventService;
     private final RegistrationService registrationService;
+    private final ImageService imageService;
 
     @Autowired
-    public DtoMapper(EventService eventService, RegistrationService registrationService) {
+    public DtoMapper(EventService eventService, RegistrationService registrationService, ImageService imageService) {
         this.eventService = eventService;
         this.registrationService = registrationService;
+        this.imageService = imageService;
     }
 
     // User entity to UserDTO
@@ -46,11 +53,19 @@ public class DtoMapper {
         eventDto.setEndTime(event.getEndTime());
         eventDto.setMaxAttendees(event.getMaxAttendees());
         eventDto.setCreator(toUserDto(event.getCreator()));
+        
         // Add registration count and full status
         if (event.getId() != null) {
             long regCount = registrationService.getEventRegistrationCount(event.getId());
             eventDto.setRegistrationCount(regCount);
             eventDto.setFull(eventService.isEventFull(event.getId()));
+            
+            // Add event images
+            List<ImageDTO> images = imageService.getImagesByEventId(event.getId())
+                .stream()
+                .map(this::toImageDto)
+                .collect(Collectors.toList());
+            eventDto.setImages(images);
         }
         
         return eventDto;
@@ -68,5 +83,18 @@ public class DtoMapper {
         registrationDto.setRegistrationTime(registration.getRegistrationTime());
         registrationDto.setAttended(registration.getAttended());
         return registrationDto;
+    }
+    
+    // Image entity to ImageDTO
+    public ImageDTO toImageDto(Image image) {
+        if (image == null) {
+            return null;
+        }
+        ImageDTO imageDTO = new ImageDTO();
+        imageDTO.setId(image.getId());
+        imageDTO.setImageUrl(image.getImageUrl());
+        imageDTO.setDisplayOrder(image.getDisplayOrder());
+        imageDTO.setCreatedAt(image.getCreatedAt());
+        return imageDTO;
     }
 }

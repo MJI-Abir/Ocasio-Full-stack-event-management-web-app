@@ -27,6 +27,218 @@ const createDate = (daysFromNow: number, hours = 0) => {
   return date.toISOString();
 };
 
+// Sample image URLs for events
+const eventImageSets = {
+  tech: [
+    {
+      id: 1,
+      imageUrl: "https://source.unsplash.com/random/800x600/?tech,conference",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 2,
+      imageUrl:
+        "https://source.unsplash.com/random/800x600/?technology,digital",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 3,
+      imageUrl: "https://source.unsplash.com/random/800x600/?innovation,future",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  art: [
+    {
+      id: 4,
+      imageUrl: "https://source.unsplash.com/random/800x600/?art,gallery",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 5,
+      imageUrl: "https://source.unsplash.com/random/800x600/?digital,artwork",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 6,
+      imageUrl:
+        "https://source.unsplash.com/random/800x600/?exhibition,creative",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  wellness: [
+    {
+      id: 7,
+      imageUrl: "https://source.unsplash.com/random/800x600/?wellness,yoga",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 8,
+      imageUrl: "https://source.unsplash.com/random/800x600/?meditation,relax",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 9,
+      imageUrl: "https://source.unsplash.com/random/800x600/?nature,retreat",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  business: [
+    {
+      id: 10,
+      imageUrl: "https://source.unsplash.com/random/800x600/?business,meeting",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 11,
+      imageUrl:
+        "https://source.unsplash.com/random/800x600/?entrepreneur,startup",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 12,
+      imageUrl:
+        "https://source.unsplash.com/random/800x600/?office,professional",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  food: [
+    {
+      id: 13,
+      imageUrl: "https://source.unsplash.com/random/800x600/?food,cooking",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 14,
+      imageUrl: "https://source.unsplash.com/random/800x600/?chef,cuisine",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 15,
+      imageUrl:
+        "https://source.unsplash.com/random/800x600/?gourmet,restaurant",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  fashion: [
+    {
+      id: 16,
+      imageUrl: "https://source.unsplash.com/random/800x600/?fashion,style",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 17,
+      imageUrl: "https://source.unsplash.com/random/800x600/?clothing,design",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 18,
+      imageUrl: "https://source.unsplash.com/random/800x600/?model,runway",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  data: [
+    {
+      id: 19,
+      imageUrl: "https://source.unsplash.com/random/800x600/?data,code",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 20,
+      imageUrl: "https://source.unsplash.com/random/800x600/?ai,machine",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 21,
+      imageUrl:
+        "https://source.unsplash.com/random/800x600/?computer,programming",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  photo: [
+    {
+      id: 22,
+      imageUrl:
+        "https://source.unsplash.com/random/800x600/?camera,photography",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 23,
+      imageUrl: "https://source.unsplash.com/random/800x600/?city,urban",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 24,
+      imageUrl:
+        "https://source.unsplash.com/random/800x600/?street,architecture",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  space: [
+    {
+      id: 25,
+      imageUrl: "https://source.unsplash.com/random/800x600/?space,planet",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 26,
+      imageUrl: "https://source.unsplash.com/random/800x600/?galaxy,stars",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 27,
+      imageUrl: "https://source.unsplash.com/random/800x600/?astronaut,rocket",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+  gaming: [
+    {
+      id: 28,
+      imageUrl: "https://source.unsplash.com/random/800x600/?gaming,vr",
+      displayOrder: 1,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 29,
+      imageUrl: "https://source.unsplash.com/random/800x600/?videogame,console",
+      displayOrder: 2,
+      createdAt: new Date().toISOString(),
+    },
+    {
+      id: 30,
+      imageUrl: "https://source.unsplash.com/random/800x600/?esports,player",
+      displayOrder: 3,
+      createdAt: new Date().toISOString(),
+    },
+  ],
+};
+
 // Mock event data
 export const mockEvents: Event[] = [
   {
@@ -41,6 +253,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[0],
     registrationCount: 421,
     isFull: false,
+    images: eventImageSets.tech,
   },
   {
     id: 2,
@@ -54,6 +267,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[1],
     registrationCount: 189,
     isFull: false,
+    images: eventImageSets.art,
   },
   {
     id: 3,
@@ -67,6 +281,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[2],
     registrationCount: 50,
     isFull: true,
+    images: eventImageSets.wellness,
   },
   {
     id: 4,
@@ -80,6 +295,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[0],
     registrationCount: 178,
     isFull: false,
+    images: eventImageSets.business,
   },
   {
     id: 5,
@@ -93,6 +309,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[1],
     registrationCount: 28,
     isFull: false,
+    images: eventImageSets.food,
   },
   {
     id: 6,
@@ -106,6 +323,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[2],
     registrationCount: 275,
     isFull: false,
+    images: eventImageSets.fashion,
   },
   {
     id: 7,
@@ -119,6 +337,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[0],
     registrationCount: 100,
     isFull: true,
+    images: eventImageSets.data,
   },
   {
     id: 8,
@@ -132,6 +351,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[1],
     registrationCount: 12,
     isFull: false,
+    images: eventImageSets.photo,
   },
   {
     id: 9,
@@ -145,6 +365,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[2],
     registrationCount: 317,
     isFull: false,
+    images: eventImageSets.space,
   },
   {
     id: 10,
@@ -158,6 +379,7 @@ export const mockEvents: Event[] = [
     creator: mockUsers[0],
     registrationCount: 143,
     isFull: false,
+    images: eventImageSets.gaming,
   },
 ];
 

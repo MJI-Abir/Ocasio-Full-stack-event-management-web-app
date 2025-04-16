@@ -7,6 +7,13 @@ import {
   mockGetEventById,
 } from "./mockData";
 
+export interface EventImage {
+  id: number;
+  imageUrl: string;
+  displayOrder: number;
+  createdAt: string;
+}
+
 export interface Event {
   id: number;
   title: string;
@@ -22,6 +29,7 @@ export interface Event {
   };
   registrationCount: number;
   isFull: boolean;
+  images: EventImage[];
 }
 
 export interface PagedResponse<T> {

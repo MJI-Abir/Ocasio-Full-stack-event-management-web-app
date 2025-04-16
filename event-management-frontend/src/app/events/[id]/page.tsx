@@ -1,16 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 import { Event } from "@/services/event";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Cookies from "js-cookie";
 import { useRouter, useParams } from "next/navigation";
 import Link from "next/link";
-import Image from "next/image";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import EventImageCarousel from "@/components/ui/EventImageCarousel";
 
 export default function EventDetailsPage() {
   const params = useParams();
@@ -20,37 +20,6 @@ export default function EventDetailsPage() {
   const [error, setError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
   const router = useRouter();
-
-  // Image carousel state
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  // Placeholder images
-  const placeholderImages = [
-    "https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1050&q=80",
-    "https://images.unsplash.com/photo-1540575467063-178a50c2df87?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1050&q=80",
-    "https://images.unsplash.com/photo-1492684223066-81342ee5ff30?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1050&q=80",
-    "https://images.unsplash.com/photo-1511795409834-ef04bbd61622?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1050&q=80",
-  ];
-
-  // Carousel controls
-  const nextImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === placeholderImages.length - 1 ? 0 : prevIndex + 1
-    );
-  };
-
-  const prevImage = () => {
-    setCurrentImageIndex((prevIndex) =>
-      prevIndex === 0 ? placeholderImages.length - 1 : prevIndex - 1
-    );
-  };
-
-  // Auto-advance carousel
-  useEffect(() => {
-    const interval = setInterval(() => {
-      nextImage();
-    }, 5000);
-    return () => clearInterval(interval);
-  }, []);
 
   // Fetch event details on component mount
   useEffect(() => {
@@ -413,86 +382,7 @@ export default function EventDetailsPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
         >
-          <div className="relative h-[400px] rounded-2xl overflow-hidden">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={currentImageIndex}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-                transition={{ duration: 0.5 }}
-                className="absolute inset-0"
-              >
-                <Image
-                  src={placeholderImages[currentImageIndex]}
-                  alt={`Event image ${currentImageIndex + 1}`}
-                  fill
-                  className="object-cover"
-                />
-              </motion.div>
-            </AnimatePresence>
-
-            {/* Carousel Controls */}
-            <div className="absolute inset-0 flex items-center justify-between p-4">
-              <motion.button
-                onClick={prevImage}
-                className="w-12 h-12 rounded-full bg-black bg-opacity-30 flex items-center justify-center text-white hover:bg-opacity-50 transition-all duration-200 cursor-pointer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
-              </motion.button>
-              <motion.button
-                onClick={nextImage}
-                className="w-12 h-12 rounded-full bg-black bg-opacity-30 flex items-center justify-center text-white hover:bg-opacity-50 transition-all duration-200 cursor-pointer"
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-6 w-6"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 5l7 7-7 7"
-                  />
-                </svg>
-              </motion.button>
-            </div>
-
-            {/* Carousel Indicators */}
-            <div className="absolute bottom-4 left-0 right-0 flex justify-center space-x-2">
-              {placeholderImages.map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentImageIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-200 cursor-pointer ${
-                    index === currentImageIndex
-                      ? "bg-white scale-125"
-                      : "bg-white bg-opacity-50"
-                  }`}
-                ></button>
-              ))}
-            </div>
-          </div>
+          <EventImageCarousel images={event.images || []} />
         </motion.section>
 
         {/* Event Details */}

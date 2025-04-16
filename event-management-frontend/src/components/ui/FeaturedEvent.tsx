@@ -2,6 +2,7 @@ import React from "react";
 import { motion } from "framer-motion";
 import { formatDistanceToNow, format } from "date-fns";
 import Link from "next/link";
+import Image from "next/image";
 import { Event } from "@/services/event";
 
 interface FeaturedEventProps {
@@ -12,9 +13,13 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event }) => {
   if (!event) return null;
 
   const startDate = new Date(event.startTime);
-  const formattedDate = format(startDate, "EEEE, MMMM d, yyyy");
-  const formattedTime = format(startDate, "h:mm a");
+  // const formattedDate = format(startDate, "EEEE, MMMM d, yyyy");
+  // const formattedTime = format(startDate, "h:mm a");
   const timeFromNow = formatDistanceToNow(startDate, { addSuffix: true });
+
+  // Get the first image from the event if available
+  const imageUrl =
+    event.images && event.images.length > 0 ? event.images[0].imageUrl : null;
 
   return (
     <motion.div
@@ -181,7 +186,24 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event }) => {
           </div>
 
           <div className="lg:w-1/3 relative">
-            <div className="h-full overflow-hidden">
+            {imageUrl ? (
+              <div className="h-80 lg:h-full relative">
+                <Image
+                  src={imageUrl}
+                  alt={`${event.title} featured image`}
+                  fill
+                  className="object-cover"
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                />
+                <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-secondary/30 to-accent/30 flex items-end p-6">
+                  <div className="bg-black/30 backdrop-blur-sm p-4 rounded-lg">
+                    <p className="text-white font-medium">
+                      Happening {timeFromNow}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            ) : (
               <div className="h-80 lg:h-full bg-gradient-to-br from-primary/40 via-secondary/40 to-accent/40 flex items-center justify-center p-8">
                 <div className="text-center">
                   <div className="w-24 h-24 mb-6 bg-white/10 rounded-full flex items-center justify-center border border-white/20 mx-auto">
@@ -201,7 +223,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event }) => {
                     </svg>
                   </div>
                   <h3 className="text-xl font-bold text-white mb-2">
-                    Don't Miss Out!
+                    Don&apos;t Miss Out!
                   </h3>
                   <p className="text-white/70 mb-6">
                     Join {event.registrationCount || 0} others who have already
@@ -229,7 +251,7 @@ const FeaturedEvent: React.FC<FeaturedEventProps> = ({ event }) => {
                   </div>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
       </div>
