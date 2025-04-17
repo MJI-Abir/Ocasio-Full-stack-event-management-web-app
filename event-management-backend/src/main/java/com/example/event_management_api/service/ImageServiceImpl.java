@@ -50,6 +50,13 @@ public class ImageServiceImpl implements ImageService {
     public void deleteImage(Long id) {
         imageRepository.deleteById(id);
     }
+    
+    @Override
+    @Transactional
+    public void deleteAllImagesByEventId(Long eventId) {
+        List<Image> images = imageRepository.findByEventId(eventId);
+        imageRepository.deleteAll(images);
+    }
 
     @Override
     @Transactional

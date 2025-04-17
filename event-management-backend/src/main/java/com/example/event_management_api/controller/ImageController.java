@@ -1,6 +1,7 @@
 package com.example.event_management_api.controller;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.event_management_api.dto.BatchImageUploadDTO;
 import com.example.event_management_api.dto.DtoMapper;
 import com.example.event_management_api.dto.ImageCreationDTO;
 import com.example.event_management_api.dto.ImageDTO;
@@ -97,6 +99,51 @@ public class ImageController {
         Image savedImage = imageService.createImage(image);
         return new ResponseEntity<>(dtoMapper.toImageDto(savedImage), HttpStatus.CREATED);
     }
+    
+    /**
+     * Batch upload multiple images for an event
+     * 
+     * @param eventId The ID of the event to add images to
+     * @param batchUploadDTO The batch of images to upload
+     * @return A list of created image DTOs
+     */
+    @PostMapping("/batch")
+    public ResponseEntity<Object> batchUploadImages(
+            @PathVariable Long eventId,
+            @Valid @RequestBody BatchImageUploadDTO batchUploadDTO) {
+        
+        Optional<Event> eventOpt = eventService.getEventById(eventId);
+        if (eventOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Check if adding these images would exceed the limit of 4
+        long currentImageCount = imageService.getImageCountForEvent(eventId);
+        int newImagesCount = batchUploadDTO.getImages().size();
+        
+        if (currentImageCount + newImagesCount > 4) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Cannot add " + newImagesCount + " images as it would exceed the maximum of 4 images per event. " +
+                          "Current count: " + currentImageCount);
+        }
+
+        Event event = eventOpt.get();
+        List<ImageDTO> createdImages = new ArrayList<>();
+        
+        for (ImageCreationDTO imageDTO : batchUploadDTO.getImages()) {
+            Image image = new Image();
+            image.setImageUrl(imageDTO.getImageUrl());
+            image.setDisplayOrder(imageDTO.getDisplayOrder());
+            image.setCreatedAt(LocalDateTime.now());
+            image.setEvent(event);
+            
+            Image savedImage = imageService.createImage(image);
+            createdImages.add(dtoMapper.toImageDto(savedImage));
+        }
+        
+        return new ResponseEntity<>(createdImages, HttpStatus.CREATED);
+    }
 
     @PutMapping("/{id}")
     public ResponseEntity<ImageDTO> updateImageOrder(
@@ -131,6 +178,23 @@ public class ImageController {
         }
 
         imageService.deleteImage(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    /**
+     * Delete all images for an event
+     * 
+     * @param eventId The ID of the event to delete images from
+     * @return No content response if successful
+     */
+    @DeleteMapping("/all")
+    public ResponseEntity<Void> deleteAllImages(@PathVariable Long eventId) {
+        Optional<Event> eventOpt = eventService.getEventById(eventId);
+        if (eventOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        imageService.deleteAllImagesByEventId(eventId);
         return ResponseEntity.noContent().build();
     }
 }

@@ -12,6 +12,7 @@ public interface ImageService {
     List<Image> getImagesByEventId(Long eventId);
     List<Image> getImagesByEvent(Event event);
     void deleteImage(Long id);
+    void deleteAllImagesByEventId(Long eventId);
     Image updateImageOrder(Long id, Integer displayOrder);
     long getImageCountForEvent(Long eventId);
 }
