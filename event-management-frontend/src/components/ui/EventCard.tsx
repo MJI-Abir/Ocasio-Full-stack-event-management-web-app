@@ -19,7 +19,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
   const imageUrl =
     event.images && event.images.length > 0
       ? event.images[0].imageUrl
-      : "https://source.unsplash.com/random/800x600/?event,conference";
+      : "https://unsplash.com/photos/crowd-of-people-sitting-on-chairs-inside-room-F2KRf_QfCqw";
 
   // Convert event title to a predictable color based on title text
   const getColorClass = (title: string) => {
