@@ -16,7 +16,7 @@ const EventImageCarousel: React.FC<EventImageCarouselProps> = ({
 
   // Default placeholder if no images are provided
   const defaultPlaceholder =
-    "https://unsplash.com/photos/crowd-of-people-sitting-on-chairs-inside-room-F2KRf_QfCqw";
+    "https://images.unsplash.com/photo-1565687981296-535f09db714e?q=80&w=1740&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D";
 
   // If no images are provided, use a placeholder
   const displayImages =
