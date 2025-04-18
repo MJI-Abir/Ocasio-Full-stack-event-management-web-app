@@ -168,6 +168,60 @@ export default function EventDetailsPage() {
     }
   };
 
+  const handleCancelRegistration = async () => {
+    if (!event) return;
+
+    // Show a confirmation dialog
+    const confirmed = window.confirm("Are you sure you want to cancel your registration?");
+    if (!confirmed) return;
+    
+    try {
+      const token = Cookies.get("token");
+      const userId = Cookies.get("userId");
+
+      if (!token || !userId) {
+        router.push("/login");
+        return;
+      }
+
+      // Make a DELETE request to cancel the registration
+      await axios.delete(
+        `${process.env.NEXT_PUBLIC_API_URL}/registrations/user/${parseInt(userId)}/event/${event.id}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+
+      // Update UI state
+      setIsUserRegistered(false);
+      
+      // Show toast notification
+      toast.info("Registration has been canceled", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+
+      // Refresh event details to update registration count
+      const response = await axios.get<Event>(
+        `${process.env.NEXT_PUBLIC_API_URL}/events/${eventId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setEvent(response.data);
+    } catch (err) {
+      console.error("Error canceling registration:", err);
+      toast.error("Failed to cancel registration. Please try again later.", {
+        position: "top-center",
+        autoClose: 3000,
+      });
+    }
+  };
+
   // Layout animation variants
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -564,6 +618,23 @@ export default function EventDetailsPage() {
             </div>
           </motion.div>
         </div>
+
+        {/* Subtle Cancel Registration button */}
+        {isUserRegistered && (
+          <motion.div 
+            className="mt-12 mb-8 text-center"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 0.7 }}
+            transition={{ delay: 0.5 }}
+          >
+            <button
+              onClick={handleCancelRegistration}
+              className="text-gray-400 hover:text-gray-300 text-sm font-light border-b border-gray-600 hover:border-gray-400 transition-colors duration-200 pb-1"
+            >
+              Cancel my registration
+            </button>
+          </motion.div>
+        )}
       </main>
 
       <Footer />
