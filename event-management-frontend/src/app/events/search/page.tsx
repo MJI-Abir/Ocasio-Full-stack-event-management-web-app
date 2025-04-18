@@ -37,7 +37,7 @@ export default function SearchResultsPage() {
         }
 
         const response = await axios.get<PagedResponse<Event>>(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/events/search`,
+          `${process.env.NEXT_PUBLIC_API_URL}/events/search`,
           {
             params: {
               keyword: keyword,

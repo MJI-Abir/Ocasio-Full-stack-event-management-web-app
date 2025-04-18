@@ -87,7 +87,7 @@ export default function ProfilePage() {
         );
 
         setUser(response.data);
-        
+
         // Fetch counts for stats section
         if (response.data.id) {
           try {
@@ -100,11 +100,14 @@ export default function ProfilePage() {
                 },
               }
             );
-            
-            if (eventsResponse.data && typeof eventsResponse.data.totalElements === 'number') {
+
+            if (
+              eventsResponse.data &&
+              typeof eventsResponse.data.totalElements === "number"
+            ) {
               setEventsCreatedCount(eventsResponse.data.totalElements);
             }
-            
+
             // Fetch events attended count
             const ticketsResponse = await axios.get<PagedResponse<UserTicket>>(
               `${process.env.NEXT_PUBLIC_API_URL}/registrations/user/${response.data.id}`,
@@ -114,8 +117,11 @@ export default function ProfilePage() {
                 },
               }
             );
-            
-            if (ticketsResponse.data && typeof ticketsResponse.data.totalElements === 'number') {
+
+            if (
+              ticketsResponse.data &&
+              typeof ticketsResponse.data.totalElements === "number"
+            ) {
               setEventsAttendedCount(ticketsResponse.data.totalElements);
             }
           } catch (err) {
@@ -549,7 +555,9 @@ export default function ProfilePage() {
               ].map((tab) => (
                 <motion.button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id as "profile" | "events" | "tickets")}
+                  onClick={() =>
+                    setActiveTab(tab.id as "profile" | "events" | "tickets")
+                  }
                   variants={tabVariants}
                   initial="inactive"
                   animate={activeTab === tab.id ? "active" : "inactive"}
@@ -665,7 +673,7 @@ export default function ProfilePage() {
                 </motion.div>
               </div>
 
-                  {/* stats section */}
+              {/* stats section */}
               <div className="space-y-6">
                 <motion.div
                   className="bg-gray-800 rounded-xl p-6 border border-gray-700"
