@@ -19,6 +19,7 @@ export default function EventDetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isRegistering, setIsRegistering] = useState(false);
+  const [isUserRegistered, setIsUserRegistered] = useState(false);
   const router = useRouter();
 
   // Fetch event details on component mount
@@ -42,6 +43,13 @@ export default function EventDetailsPage() {
         );
 
         setEvent(response.data);
+        
+        // Check if user is already registered for this event
+        const userId = Cookies.get("userId");
+        if (userId) {
+          checkUserRegistration(parseInt(userId), response.data.id);
+        }
+        
         setIsLoading(false);
       } catch (err: unknown) {
         console.error("Error fetching event details:", err);
@@ -65,6 +73,33 @@ export default function EventDetailsPage() {
 
     fetchEventDetails();
   }, [eventId, router]);
+
+  // Check if user is already registered for this event
+  const checkUserRegistration = async (userId: number, eventId: number) => {
+    try {
+      const token = Cookies.get("token");
+      if (!token) return;
+      
+      const response = await axios.get(
+        `${process.env.NEXT_PUBLIC_API_URL}/registrations/user/${userId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      
+      // Check if user is registered for this specific event
+      if (response.data && response.data.content) {
+        const isRegistered = response.data.content.some(
+          (registration: any) => registration.event.id === eventId
+        );
+        setIsUserRegistered(isRegistered);
+      }
+    } catch (err) {
+      console.error("Error checking registration status:", err);
+    }
+  };
 
   const handleRegister = async () => {
     if (!event) return;
@@ -95,6 +130,9 @@ export default function EventDetailsPage() {
           },
         }
       );
+
+      // Set the user as registered
+      setIsUserRegistered(true);
 
       // Show toast notification
       toast.success(
@@ -293,13 +331,15 @@ export default function EventDetailsPage() {
                   </div>
                 </div>
                 <motion.button
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                  onClick={handleRegister}
-                  disabled={isRegistering || event.isFull}
+                  whileHover={isUserRegistered ? {} : { scale: 1.05 }}
+                  whileTap={isUserRegistered ? {} : { scale: 0.95 }}
+                  onClick={isUserRegistered ? undefined : handleRegister}
+                  disabled={isRegistering || event.isFull || isUserRegistered}
                   className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
                     event.isFull
                       ? "bg-gray-700 text-gray-400 cursor-not-allowed"
+                      : isUserRegistered
+                      ? "bg-teal-900 text-teal-200 cursor-not-allowed"
                       : "bg-teal-500 hover:bg-teal-600 text-white cursor-pointer"
                   }`}
                 >
@@ -329,6 +369,8 @@ export default function EventDetailsPage() {
                     </span>
                   ) : event.isFull ? (
                     "Event Full"
+                  ) : isUserRegistered ? (
+                    "Already Registered"
                   ) : (
                     "Register Now"
                   )}
