@@ -43,13 +43,13 @@ export default function EventDetailsPage() {
         );
 
         setEvent(response.data);
-        
+
         // Check if user is already registered for this event
         const userId = Cookies.get("userId");
         if (userId) {
           checkUserRegistration(parseInt(userId), response.data.id);
         }
-        
+
         setIsLoading(false);
       } catch (err: unknown) {
         console.error("Error fetching event details:", err);
@@ -79,7 +79,7 @@ export default function EventDetailsPage() {
     try {
       const token = Cookies.get("token");
       if (!token) return;
-      
+
       const response = await axios.get(
         `${process.env.NEXT_PUBLIC_API_URL}/registrations/user/${userId}`,
         {
@@ -88,7 +88,7 @@ export default function EventDetailsPage() {
           },
         }
       );
-      
+
       // Check if user is registered for this specific event
       if (response.data && response.data.content) {
         const isRegistered = response.data.content.some(
@@ -172,9 +172,11 @@ export default function EventDetailsPage() {
     if (!event) return;
 
     // Show a confirmation dialog
-    const confirmed = window.confirm("Are you sure you want to cancel your registration?");
+    const confirmed = window.confirm(
+      "Are you sure you want to cancel your registration?"
+    );
     if (!confirmed) return;
-    
+
     try {
       const token = Cookies.get("token");
       const userId = Cookies.get("userId");
@@ -186,7 +188,9 @@ export default function EventDetailsPage() {
 
       // Make a DELETE request to cancel the registration
       await axios.delete(
-        `${process.env.NEXT_PUBLIC_API_URL}/registrations/user/${parseInt(userId)}/event/${event.id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/registrations/user/${parseInt(
+          userId
+        )}/event/${event.id}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -196,7 +200,7 @@ export default function EventDetailsPage() {
 
       // Update UI state
       setIsUserRegistered(false);
-      
+
       // Show toast notification
       toast.info("Registration has been canceled", {
         position: "top-center",
@@ -390,11 +394,11 @@ export default function EventDetailsPage() {
                   onClick={isUserRegistered ? undefined : handleRegister}
                   disabled={isRegistering || event.isFull || isUserRegistered}
                   className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                    event.isFull
-                      ? "bg-gray-700 text-gray-400 cursor-not-allowed"
-                      : isUserRegistered
-                      ? "bg-teal-900 text-teal-200 cursor-not-allowed"
-                      : "bg-teal-500 hover:bg-teal-600 text-white cursor-pointer"
+                    (() => {
+                      if (event.isFull) return "bg-gray-700 text-gray-400 cursor-not-allowed";
+                      if (isUserRegistered) return "bg-teal-900 text-teal-200 cursor-not-allowed";
+                      return "bg-teal-500 hover:bg-teal-600 text-white cursor-pointer";
+                    })()
                   }`}
                 >
                   {isRegistering ? (
@@ -621,7 +625,7 @@ export default function EventDetailsPage() {
 
         {/* Subtle Cancel Registration button */}
         {isUserRegistered && (
-          <motion.div 
+          <motion.div
             className="mt-12 mb-8 text-center"
             initial={{ opacity: 0 }}
             animate={{ opacity: 0.7 }}

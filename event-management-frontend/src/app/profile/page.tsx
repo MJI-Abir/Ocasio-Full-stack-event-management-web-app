@@ -60,6 +60,8 @@ export default function ProfilePage() {
   const [userTickets, setUserTickets] = useState<UserTicket[]>([]);
   const [eventsLoading, setEventsLoading] = useState(false);
   const [ticketsLoading, setTicketsLoading] = useState(false);
+  const [eventsCreatedCount, setEventsCreatedCount] = useState(0);
+  const [eventsAttendedCount, setEventsAttendedCount] = useState(0);
   const router = useRouter();
 
   // Fetch user data on component mount
@@ -85,6 +87,42 @@ export default function ProfilePage() {
         );
 
         setUser(response.data);
+        
+        // Fetch counts for stats section
+        if (response.data.id) {
+          try {
+            // Fetch events created count
+            const eventsResponse = await axios.get<PagedResponse<UserEvent>>(
+              `${process.env.NEXT_PUBLIC_API_URL}/events/creator/${response.data.id}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            
+            if (eventsResponse.data && typeof eventsResponse.data.totalElements === 'number') {
+              setEventsCreatedCount(eventsResponse.data.totalElements);
+            }
+            
+            // Fetch events attended count
+            const ticketsResponse = await axios.get<PagedResponse<UserTicket>>(
+              `${process.env.NEXT_PUBLIC_API_URL}/registrations/user/${response.data.id}`,
+              {
+                headers: {
+                  Authorization: `Bearer ${token}`,
+                },
+              }
+            );
+            
+            if (ticketsResponse.data && typeof ticketsResponse.data.totalElements === 'number') {
+              setEventsAttendedCount(ticketsResponse.data.totalElements);
+            }
+          } catch (err) {
+            console.error("Error fetching user stats:", err);
+          }
+        }
+
         setIsLoading(false);
       } catch (err: unknown) {
         console.error("Error fetching user data:", err);
@@ -627,6 +665,7 @@ export default function ProfilePage() {
                 </motion.div>
               </div>
 
+                  {/* stats section */}
               <div className="space-y-6">
                 <motion.div
                   className="bg-gray-800 rounded-xl p-6 border border-gray-700"
@@ -640,13 +679,13 @@ export default function ProfilePage() {
                   <div className="grid grid-cols-2 gap-4">
                     <div className="bg-gray-700 rounded-lg p-4 text-center">
                       <div className="text-3xl font-bold text-teal-400 mb-1">
-                        0
+                        {eventsCreatedCount}
                       </div>
                       <div className="text-gray-400">Events Created</div>
                     </div>
                     <div className="bg-gray-700 rounded-lg p-4 text-center">
                       <div className="text-3xl font-bold text-teal-400 mb-1">
-                        0
+                        {eventsAttendedCount}
                       </div>
                       <div className="text-gray-400">Events Attended</div>
                     </div>
