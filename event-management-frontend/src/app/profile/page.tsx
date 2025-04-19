@@ -7,6 +7,8 @@ import Footer from "@/components/Footer";
 import Cookies from "js-cookie";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import TicketCard from "@/components/ui/TicketCard";
+import CreatedEventsSection from "@/components/ui/CreatedEventsSection";
 
 // TypeScript interface for User
 interface User {
@@ -160,11 +162,6 @@ export default function ProfilePage() {
         setEventsLoading(true);
         try {
           const token = Cookies.get("token");
-
-          // if (!token) {
-          //   router.push("/login");
-          //   return;
-          // }
 
           const response = await axios.get<PagedResponse<UserEvent>>(
             `${process.env.NEXT_PUBLIC_API_URL}/events/creator/${user.id}`,
@@ -711,194 +708,10 @@ export default function ProfilePage() {
               exit={{ opacity: 0, y: -20 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-2xl font-bold text-white">My Events</h2>
-                <Link href="/events/create">
-                  <motion.button
-                    className="bg-teal-500 hover:bg-teal-600 text-white px-4 py-2 rounded-lg flex items-center"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-2"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Create Event
-                  </motion.button>
-                </Link>
-              </div>
-
-              {eventsLoading ? (
-                <div className="flex justify-center py-12">
-                  <div className="w-12 h-12 rounded-full border-t-4 border-teal-400 border-opacity-50 border-r-4 border-r-teal-400 animate-spin"></div>
-                </div>
-              ) : userEvents.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                  {userEvents.map((event) => (
-                    <motion.div
-                      key={event.id}
-                      className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700 shadow-lg"
-                      whileHover={{
-                        y: -5,
-                        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
-                      }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 15,
-                      }}
-                    >
-                      <div className="h-40 bg-gradient-to-r from-teal-500 to-blue-500 relative">
-                        <div className="absolute inset-0 flex items-center justify-center">
-                          <span className="text-white text-2xl font-bold">
-                            Event Image
-                          </span>
-                        </div>
-                      </div>
-                      <div className="p-5">
-                        <h3 className="text-xl font-bold text-white mb-2 truncate">
-                          {event.title}
-                        </h3>
-                        <div className="text-gray-400 mb-3">
-                          <div className="flex items-center mb-1">
-                            <svg
-                              className="h-4 w-4 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                              />
-                            </svg>
-                            <span>
-                              {new Date(event.startTime).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <div className="flex items-center">
-                            <svg
-                              className="h-4 w-4 mr-2"
-                              fill="none"
-                              viewBox="0 0 24 24"
-                              stroke="currentColor"
-                            >
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                              />
-                              <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                              />
-                            </svg>
-                            <span>{event.location}</span>
-                          </div>
-                        </div>
-
-                        <div className="mb-4">
-                          <div className="relative pt-1">
-                            <div className="flex mb-2 items-center justify-between">
-                              <div>
-                                <span className="text-xs font-semibold inline-block py-1 px-2 uppercase rounded-full text-teal-500 bg-teal-200 bg-opacity-10">
-                                  Attendance
-                                </span>
-                              </div>
-                              <div className="text-right">
-                                <span className="text-xs text-gray-400">
-                                  {event.registrationCount}/{event.maxAttendees}
-                                </span>
-                              </div>
-                            </div>
-                            <div className="overflow-hidden h-2 mb-4 text-xs flex rounded bg-gray-700">
-                              <motion.div
-                                style={{
-                                  width: `${
-                                    (event.registrationCount /
-                                      event.maxAttendees) *
-                                    100
-                                  }%`,
-                                }}
-                                className="shadow-none flex flex-col text-center whitespace-nowrap text-white justify-center bg-teal-500"
-                                initial={{ width: 0 }}
-                                animate={{
-                                  width: `${
-                                    (event.registrationCount /
-                                      event.maxAttendees) *
-                                    100
-                                  }%`,
-                                }}
-                                transition={{ duration: 1, ease: "easeOut" }}
-                              ></motion.div>
-                            </div>
-                          </div>
-                        </div>
-
-                        <Link href={`/events/${event.id}`}>
-                          <motion.button
-                            className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg w-full transition-colors duration-200"
-                            whileHover={{ scale: 1.03 }}
-                            whileTap={{ scale: 0.97 }}
-                          >
-                            View Details
-                          </motion.button>
-                        </Link>
-                      </div>
-                    </motion.div>
-                  ))}
-                </div>
-              ) : (
-                <motion.div
-                  className="bg-gray-800 rounded-xl p-12 text-center border border-gray-700"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-16 w-16 text-gray-500 mx-auto mb-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={1.5}
-                      d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                    />
-                  </svg>
-                  <h3 className="text-xl font-bold text-white mb-2">
-                    No Events Found
-                  </h3>
-                  <p className="text-gray-400 mb-6">
-                    You haven&apos;t created any events yet.
-                  </p>
-                  <Link href="/events/create">
-                    <motion.button
-                      className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg"
-                      whileHover={{ scale: 1.05 }}
-                      whileTap={{ scale: 0.95 }}
-                    >
-                      Create Your First Event
-                    </motion.button>
-                  </Link>
-                </motion.div>
-              )}
+              <CreatedEventsSection
+                events={userEvents}
+                isLoading={eventsLoading}
+              />
             </motion.section>
           )}
 
@@ -919,117 +732,13 @@ export default function ProfilePage() {
               ) : userTickets.length > 0 ? (
                 <div className="space-y-4">
                   {userTickets.map((ticket) => (
-                    <motion.div
+                    <TicketCard
                       key={ticket.id}
-                      className="bg-gray-800 rounded-xl overflow-hidden border border-gray-700"
-                      whileHover={{
-                        y: -3,
-                        boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.3)",
-                      }}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{
-                        type: "spring",
-                        stiffness: 300,
-                        damping: 15,
-                      }}
-                    >
-                      <div className="p-6 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                        <div>
-                          <h3 className="text-xl font-bold text-white mb-1">
-                            {ticket.event.title}
-                          </h3>
-                          <div className="flex flex-wrap gap-4 text-gray-400">
-                            <div className="flex items-center">
-                              <svg
-                                className="h-4 w-4 mr-2"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                                />
-                              </svg>
-                              <span>
-                                {new Date(
-                                  ticket.event.startTime
-                                ).toLocaleDateString()}
-                              </span>
-                            </div>
-                            <div className="flex items-center">
-                              <svg
-                                className="h-4 w-4 mr-2"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"
-                                />
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
-                                />
-                              </svg>
-                              <span>{ticket.event.location}</span>
-                            </div>
-                            <div className="flex items-center">
-                              <svg
-                                className="h-4 w-4 mr-2"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M15 5v2m0 4v2m0 4v2M5 5a2 2 0 00-2 2v3a2 2 0 110 4v3a2 2 0 002 2h14a2 2 0 002-2v-3a2 2 0 110-4V7a2 2 0 00-2-2H5z"
-                                />
-                              </svg>
-                              <span>
-                                Registered on{" "}
-                                {new Date(
-                                  ticket.registrationDate
-                                ).toLocaleDateString()}
-                              </span>
-                            </div>
-                          </div>
-                        </div>
-
-                        <div className="flex items-center space-x-4">
-                          <div
-                            className={`px-4 py-1 rounded-full text-xs font-bold ${
-                              ticket.status === "CONFIRMED"
-                                ? "bg-green-900 text-green-300"
-                                : ticket.status === "PENDING"
-                                ? "bg-yellow-900 text-yellow-300"
-                                : "bg-red-900 text-red-300"
-                            }`}
-                          >
-                            {ticket.status}
-                          </div>
-                          <Link href={`/events/${ticket.event.id}`}>
-                            <motion.button
-                              className="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
-                              whileHover={{ scale: 1.05 }}
-                              whileTap={{ scale: 0.95 }}
-                            >
-                              View Event
-                            </motion.button>
-                          </Link>
-                        </div>
-                      </div>
-                    </motion.div>
+                      id={ticket.id}
+                      event={ticket.event}
+                      registrationDate={ticket.registrationDate}
+                      status={ticket.status}
+                    />
                   ))}
                 </div>
               ) : (
@@ -1059,7 +768,7 @@ export default function ProfilePage() {
                   <p className="text-gray-400 mb-6">
                     You haven&apos;t registered for any events yet.
                   </p>
-                  <Link href="/events">
+                  <Link href="/api/events">
                     <motion.button
                       className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg"
                       whileHover={{ scale: 1.05 }}
