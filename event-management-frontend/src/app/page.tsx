@@ -10,6 +10,7 @@ import Header from "@/components/Header";
 import SearchBar from "@/components/ui/SearchBar";
 import EventGrid from "@/components/ui/EventGrid";
 import Pagination from "@/components/ui/Pagination";
+import FaqItem from "@/components/ui/FaqItem";
 import Cookies from "js-cookie";
 import Footer from "@/components/Footer";
 
@@ -349,7 +350,7 @@ export default function HomePage() {
                     >
                       <path
                         fillRule="evenodd"
-                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
                         clipRule="evenodd"
                       />
                     </svg>
@@ -501,44 +502,48 @@ export default function HomePage() {
           )}
         </motion.section>
 
-        {/* Categories Section */}
+        {/* FAQ Section */}
         <motion.section className="mb-20" variants={itemVariants}>
-          <h2 className="text-3xl font-bold text-white mb-8">
-            Browse by Category
-          </h2>
+          <h2 className="text-3xl font-bold text-white mb-8">FAQ</h2>
 
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {["Tech", "Business", "Social", "Education", "Entertainment"].map(
-              (category, index) => (
-                <Link
-                  key={category}
-                  href={`/events/search?keyword=${category.toLowerCase()}`}
-                >
-                  <motion.div
-                    className="bg-gray-800 hover:bg-gray-700 border border-gray-700 rounded-xl p-6 text-center transition-all duration-200 h-full flex flex-col items-center justify-center group cursor-pointer"
-                    whileHover={{
-                      scale: 1.05,
-                      boxShadow:
-                        "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-                    }}
-                    whileTap={{ scale: 0.98 }}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.1 }}
-                  >
-                    <div className="w-12 h-12 rounded-full bg-gradient-to-br from-teal-400 to-blue-500 flex items-center justify-center mb-3 group-hover:scale-110 transition-transform duration-200">
-                      {getCategoryIcon(category)}
-                    </div>
-                    <span className="text-gray-100 font-medium">
-                      {category}
-                    </span>
-                    <span className="text-gray-400 text-sm mt-1">
-                      12 events
-                    </span>
-                  </motion.div>
-                </Link>
-              )
-            )}
+          <div className="space-y-4">
+            {[
+              {
+                question: "How do I create an event?",
+                answer:
+                  "You can create an event by clicking the 'Create Event' button on the homepage. Fill out the event details form including title, description, date, time, location, and any other relevant information. Once submitted, your event will be published and visible to other users.",
+              },
+              {
+                question: "Can I edit my event after publishing?",
+                answer:
+                  "Yes, you can edit your event details after publishing. Navigate to your dashboard, find the event you want to edit, and click on 'Edit Event'. Make your changes and save them to update your event information.",
+              },
+              {
+                question: "How do I register for an event?",
+                answer:
+                  "To register for an event, navigate to the event page and click the 'Register' or 'RSVP' button. You may need to provide some additional information or answer questions set by the event organizer. Once registered, you'll receive a confirmation email with details.",
+              },
+              {
+                question: "Are there refunds for paid events?",
+                answer:
+                  "Refund policies vary depending on the event organizer. Generally, most events allow refunds up to 48 hours before the event starts. Check the specific event's refund policy on its details page for accurate information.",
+              },
+              {
+                question: "How can I contact event organizers?",
+                answer:
+                  "Each event has a contact section where you can reach out to organizers. Additionally, if you're registered for an event, you may have access to a discussion board or messaging system specifically for that event. Check your event confirmation email for contact details as well.",
+              },
+            ].map((faq, index) => (
+              <motion.div
+                key={index}
+                className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.1 }}
+              >
+                <FaqItem question={faq.question} answer={faq.answer} />
+              </motion.div>
+            ))}
           </div>
         </motion.section>
 
