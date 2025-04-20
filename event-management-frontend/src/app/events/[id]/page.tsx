@@ -92,7 +92,7 @@ export default function EventDetailsPage() {
       // Check if user is registered for this specific event
       if (response.data && response.data.content) {
         const isRegistered = response.data.content.some(
-          (registration: any) => registration.event.id === eventId
+          (registration: { event: { id: number } }) => registration.event.id === eventId
         );
         setIsUserRegistered(isRegistered);
       }

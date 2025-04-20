@@ -1,8 +1,8 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { motion, AnimatePresence } from "framer-motion";
-import { useRouter, usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import { usePathname } from "next/navigation";
 import Cookies from "js-cookie";
 import axios from "axios";
 import { User } from "@/types/auth";
@@ -12,9 +12,7 @@ const Header = () => {
   const { logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [user, setUser] = useState<User | null>(null);
-  const router = useRouter();
   const pathname = usePathname();
 
   // Check if user is logged in
