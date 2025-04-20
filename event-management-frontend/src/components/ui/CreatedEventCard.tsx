@@ -19,7 +19,7 @@ export default function CreatedEventCard({
   location,
   registrationCount,
   maxAttendees,
-}: CreatedEventCardProps) {
+}: Readonly<CreatedEventCardProps>) {
   return (
     <motion.div
       key={id}

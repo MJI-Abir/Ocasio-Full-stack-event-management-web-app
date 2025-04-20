@@ -59,7 +59,7 @@ public class EventController {
     public ResponseEntity<?> createEvent(@RequestBody EventCreationDTO eventCreateDTO, Authentication authentication) {
         // Get the authenticated user's email
         String userEmail = authentication.getName();
-        Optional<User> userOpt = userService.findByEmail(userEmail);
+        Optional<User> userOpt = userService.getUserByEmail(userEmail);
         
         if (userOpt.isEmpty()) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
@@ -74,8 +74,21 @@ public class EventController {
         
         // If user is admin, proceed with creating the event
         try {
-            EventDTO savedEvent = eventService.createEvent(eventCreateDTO, user.getId());
-            return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
+            // Convert DTO to entity
+            Event event = new Event();
+            event.setTitle(eventCreateDTO.getTitle());
+            event.setDescription(eventCreateDTO.getDescription());
+            event.setLocation(eventCreateDTO.getLocation());
+            event.setStartTime(eventCreateDTO.getStartTime());
+            event.setEndTime(eventCreateDTO.getEndTime());
+            event.setMaxAttendees(eventCreateDTO.getMaxAttendees());
+            event.setCreator(user);
+            
+            // Save the event
+            Event savedEvent = eventService.createEvent(event);
+            
+            // Return DTO
+            return ResponseEntity.status(HttpStatus.CREATED).body(dtoMapper.toEventDto(savedEvent));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         }

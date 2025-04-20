@@ -36,6 +36,7 @@ public class DtoMapper {
         userDto.setId(user.getId());
         userDto.setName(user.getName());
         userDto.setEmail(user.getEmail());
+        userDto.setAdmin(user.isAdmin()); // Add isAdmin field mapping
         return userDto;
     }
 
