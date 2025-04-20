@@ -1,12 +1,48 @@
-import { motion } from "framer-motion";
-import Link from "next/link";
-import useAuth from "@/hooks/useAuth";
+"use client";
 import { useState, useEffect, useRef } from "react";
+import Link from "next/link";
+import { motion, AnimatePresence } from "framer-motion";
+import { useRouter, usePathname } from "next/navigation";
+import Cookies from "js-cookie";
+import axios from "axios";
+import { User } from "@/types/auth";
+import useAuth from "@/hooks/useAuth";
 
 const Header = () => {
   const { logout } = useAuth();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [user, setUser] = useState<User | null>(null);
+  const router = useRouter();
+  const pathname = usePathname();
+
+  // Check if user is logged in
+  useEffect(() => {
+    const fetchCurrentUser = async () => {
+      const token = Cookies.get("token");
+
+      if (token) {
+        try {
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setUser(response.data);
+        } catch (error) {
+          console.error("Error fetching user:", error);
+          Cookies.remove("token");
+          setUser(null);
+        }
+      }
+    };
+
+    fetchCurrentUser();
+  }, []);
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -34,13 +70,49 @@ const Header = () => {
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex">
+          <div className="flex items-center space-x-8">
             <div className="flex-shrink-0 flex items-center">
               <Link href="/" className="text-xl font-bold text-teal-400">
                 Ocasio
               </Link>
             </div>
+
+            {/* Navigation Links */}
+            <nav className="hidden md:flex space-x-6">
+              <Link
+                href="/"
+                className={`text-gray-300 hover:text-teal-400 transition-colors ${
+                  pathname === "/" ? "text-teal-400" : ""
+                }`}
+              >
+                Home
+              </Link>
+              <Link
+                href="/events"
+                className={`text-gray-300 hover:text-teal-400 transition-colors ${
+                  pathname?.startsWith("/events") &&
+                  pathname !== "/events/create"
+                    ? "text-teal-400"
+                    : ""
+                }`}
+              >
+                Events
+              </Link>
+
+              {/* Only show Create Event button to admin users */}
+              {user?.isAdmin && (
+                <Link
+                  href="/events/create"
+                  className={`text-gray-300 hover:text-teal-400 transition-colors ${
+                    pathname === "/events/create" ? "text-teal-400" : ""
+                  }`}
+                >
+                  Create Event
+                </Link>
+              )}
+            </nav>
           </div>
+
           <div className="flex items-center">
             <div className="relative" ref={dropdownRef}>
               <button
@@ -85,6 +157,12 @@ const Header = () => {
                     </svg>
                     Profile
                   </Link>
+                  {/* Admin indicator */}
+                  {user?.isAdmin && (
+                    <div className="px-4 py-1 text-xs text-teal-400 border-t border-gray-700">
+                      Admin Account
+                    </div>
+                  )}
                   <button
                     onClick={() => {
                       const confirmLogout = window.confirm(

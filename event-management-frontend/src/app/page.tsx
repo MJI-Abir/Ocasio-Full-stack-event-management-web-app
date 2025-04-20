@@ -13,6 +13,7 @@ import Pagination from "@/components/ui/Pagination";
 import FaqItem from "@/components/ui/FaqItem";
 import Cookies from "js-cookie";
 import Footer from "@/components/Footer";
+import { User } from "@/types/auth";
 
 // Helper function to get category icons
 const getCategoryIcon = (category: string) => {
@@ -137,7 +138,34 @@ export default function HomePage() {
   const [error, setError] = useState<string | null>(null);
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
+  const [user, setUser] = useState<User | null>(null);
   const router = useRouter();
+
+  // Fetch user data on component mount
+  useEffect(() => {
+    const fetchUserData = async () => {
+      const token = Cookies.get("token");
+
+      if (token) {
+        try {
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+          setUser(response.data);
+        } catch (error) {
+          console.error("Error fetching user:", error);
+          setUser(null);
+        }
+      }
+    };
+
+    fetchUserData();
+  }, []);
 
   // Fetch events on component mount and when page changes
   useEffect(() => {
@@ -336,27 +364,29 @@ export default function HomePage() {
                 animate={{ opacity: 1 }}
                 transition={{ delay: 0.6, duration: 0.8 }}
               >
-                <Link href="/events/create">
-                  <motion.button
-                    className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-gray-900 font-medium rounded-lg shadow-lg transition-all duration-300 flex items-center cursor-pointer"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.98 }}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      className="h-5 w-5 mr-2"
-                      viewBox="0 0 20 20"
-                      fill="currentColor"
+                {user?.isAdmin && (
+                  <Link href="/events/create">
+                    <motion.button
+                      className="px-6 py-3 bg-teal-500 hover:bg-teal-600 text-gray-900 font-medium rounded-lg shadow-lg transition-all duration-300 flex items-center cursor-pointer"
+                      whileHover={{ scale: 1.05 }}
+                      whileTap={{ scale: 0.98 }}
                     >
-                      <path
-                        fillRule="evenodd"
-                        d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
-                    Create Event
-                  </motion.button>
-                </Link>
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        className="h-5 w-5 mr-2"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                      Create Event
+                    </motion.button>
+                  </Link>
+                )}
 
                 <Link href="/dashboard">
                   <motion.button

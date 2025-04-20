@@ -13,6 +13,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,24 +56,29 @@ public class EventController {
     }
 
     @PostMapping
-    public ResponseEntity<EventDTO> createEvent(@Valid @RequestBody EventCreationDTO eventDTO,
-                                              @RequestParam Long creatorId) {
-        Optional<User> creatorOpt = userService.getUserById(creatorId);
-        if (creatorOpt.isEmpty()) {
-            return ResponseEntity.badRequest().build();
+    public ResponseEntity<?> createEvent(@RequestBody EventCreationDTO eventCreateDTO, Authentication authentication) {
+        // Get the authenticated user's email
+        String userEmail = authentication.getName();
+        Optional<User> userOpt = userService.findByEmail(userEmail);
+        
+        if (userOpt.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("User not found");
         }
         
-        Event event = new Event();
-        event.setTitle(eventDTO.getTitle());
-        event.setDescription(eventDTO.getDescription());
-        event.setStartTime(eventDTO.getStartTime());
-        event.setEndTime(eventDTO.getEndTime());
-        event.setLocation(eventDTO.getLocation());
-        event.setMaxAttendees(eventDTO.getMaxAttendees());
-        event.setCreator(creatorOpt.get());
+        User user = userOpt.get();
         
-        Event savedEvent = eventService.createEvent(event);
-        return new ResponseEntity<>(dtoMapper.toEventDto(savedEvent), HttpStatus.CREATED);
+        // Check if user is an admin
+        if (!user.isAdmin()) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Only admins can create events");
+        }
+        
+        // If user is admin, proceed with creating the event
+        try {
+            EventDTO savedEvent = eventService.createEvent(eventCreateDTO, user.getId());
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedEvent);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
+        }
     }
 
     @GetMapping

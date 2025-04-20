@@ -28,6 +28,9 @@ public class User {
     @Column(nullable = false)
     private String password;
 
+    @Column(nullable = false)
+    private boolean isAdmin = false; // Default value is false
+
     // User can create multiple events
     @OneToMany(mappedBy = "creator", cascade = CascadeType.ALL)
     private Set<Event> createdEvents = new HashSet<>();
@@ -35,5 +38,12 @@ public class User {
     // User can register for multiple events
     @OneToMany(mappedBy = "user", cascade = CascadeType.ALL)
     private Set<Registration> registrations = new HashSet<>();
-
+    
+    // Constructor
+    public User(String name, String email, String password) {
+        this.name = name;
+        this.email = email;
+        this.password = password;
+        this.isAdmin = false;
+    }
 }

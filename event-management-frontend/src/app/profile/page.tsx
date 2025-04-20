@@ -15,7 +15,6 @@ interface User {
   id: number;
   name: string;
   email: string;
-  createdAt: string;
 }
 
 // Additional TypeScript interfaces
@@ -496,8 +495,7 @@ export default function ProfilePage() {
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: 0.6 }}
                   >
-                    Member since{" "}
-                    {new Date(user?.createdAt || "").toLocaleDateString()}
+                    Member
                   </motion.p>
                 </div>
               </div>

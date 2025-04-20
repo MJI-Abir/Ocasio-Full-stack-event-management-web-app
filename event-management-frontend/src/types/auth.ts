@@ -14,7 +14,15 @@ export interface AuthResponse {
 }
 
 export interface User {
-  id?: number;
+  id: number;
   name: string;
   email: string;
+  isAdmin: boolean;
+}
+
+export interface AuthState {
+  user: User | null;
+  isAuthenticated: boolean;
+  isLoading: boolean;
+  error: string | null;
 }
