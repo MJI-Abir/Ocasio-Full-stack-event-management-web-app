@@ -96,7 +96,9 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
 
       <div className="p-6 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-3">
-          <h3 className={`text-xl font-bold text-transparent bg-clip-text ${titleGradient} line-clamp-2`}>
+          <h3
+            className={`text-xl font-bold text-transparent bg-clip-text ${titleGradient} line-clamp-2`}
+          >
             {event.title}
           </h3>
           <div className="subtle-glass px-2 py-1 rounded-full text-xs font-medium text-white ml-2 whitespace-nowrap flex-shrink-0">
@@ -182,9 +184,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
             <div className="w-full bg-gray-700/50 rounded-full h-1.5">
               <div
                 className={`h-1.5 rounded-full ${
-                  event.isFull
-                    ? "bg-rose-500"
-                    : `bg-gradient-to-r ${cardColor}`
+                  event.isFull ? "bg-rose-500" : `bg-gradient-to-r ${cardColor}`
                 }`}
                 style={{
                   width: `${Math.min(

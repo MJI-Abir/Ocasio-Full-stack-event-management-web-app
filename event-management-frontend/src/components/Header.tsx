@@ -7,6 +7,7 @@ import Cookies from "js-cookie";
 import axios from "axios";
 import { User } from "@/types/auth";
 import useAuth from "@/hooks/useAuth";
+import Image from "next/image";
 
 const Header = () => {
   const { logout } = useAuth();
@@ -70,8 +71,15 @@ const Header = () => {
         <div className="flex justify-between h-16">
           <div className="flex items-center space-x-8">
             <div className="flex-shrink-0 flex items-center">
-              <Link href="/" className="text-xl font-bold text-teal-400">
-                Ocasio
+              <Link href="/" className="flex items-center">
+                <Image 
+                  width={32}
+                  height={32}
+                  src="/favicon.svg" 
+                  alt="Ocasio Logo" 
+                  className="h-8 w-8 mr-2" 
+                />
+                <span className="text-xl font-bold text-teal-400">Ocasio</span>
               </Link>
             </div>
 

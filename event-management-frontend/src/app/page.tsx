@@ -15,7 +15,6 @@ import Cookies from "js-cookie";
 import Footer from "@/components/Footer";
 import { User } from "@/types/auth";
 
-
 export default function HomePage() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
   const [featuredEvents, setFeaturedEvents] = useState<Event[]>([]);
