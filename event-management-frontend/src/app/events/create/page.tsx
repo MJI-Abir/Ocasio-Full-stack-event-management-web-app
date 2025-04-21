@@ -32,25 +32,43 @@ export default function CreateEventPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
+  const [dateError, setDateError] = useState<string | null>(null);
   const router = useRouter();
+
+  // Validate dates when either startTime or endTime changes
+  useEffect(() => {
+    if (formData.startTime && formData.endTime) {
+      const startDate = new Date(formData.startTime);
+      const endDate = new Date(formData.endTime);
+
+      if (endDate < startDate) {
+        setDateError("End date cannot be earlier than start date");
+      } else {
+        setDateError(null);
+      }
+    }
+  }, [formData.startTime, formData.endTime]);
 
   // Fetch user data to check if admin
   useEffect(() => {
     const fetchUserData = async () => {
       const token = Cookies.get("token");
-      
+
       if (token) {
         try {
-          const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/users/me`, {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
+          const response = await axios.get(
+            `${process.env.NEXT_PUBLIC_API_URL}/users/me`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
           console.log("User data received:", response.data);
           console.log("Is admin field:", response.data.isAdmin);
           console.log("Type of isAdmin:", typeof response.data.isAdmin);
           setUser(response.data);
-          
+
           // Redirect non-admin users
           if (!response.data.isAdmin) {
             console.log("User is not an admin, redirecting...");
@@ -71,7 +89,9 @@ export default function CreateEventPage() {
     fetchUserData();
   }, [router]);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -81,13 +101,20 @@ export default function CreateEventPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    // Check date validation before submission
+    if (dateError) {
+      setError(dateError);
+      return;
+    }
+
     setIsSubmitting(true);
     setError(null);
     setSuccess(null);
 
     try {
       const token = Cookies.get("token");
-      
+
       if (!token) {
         router.push("/login");
         return;
@@ -104,7 +131,7 @@ export default function CreateEventPage() {
       );
 
       setSuccess("Event created successfully!");
-      
+
       // Reset form
       setFormData({
         title: "",
@@ -161,9 +188,13 @@ export default function CreateEventPage() {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-3xl text-teal-400 font-bold mb-4">Access Denied</h1>
-          <p className="text-white mb-6">Only administrators can create events.</p>
-          <button 
+          <h1 className="text-3xl text-teal-400 font-bold mb-4">
+            Access Denied
+          </h1>
+          <p className="text-white mb-6">
+            Only administrators can create events.
+          </p>
+          <button
             onClick={() => router.push("/")}
             className="bg-teal-500 hover:bg-teal-600 text-white px-6 py-3 rounded-lg"
           >
@@ -188,7 +219,7 @@ export default function CreateEventPage() {
           className="bg-gray-800 rounded-xl p-8 border border-gray-700 shadow-lg"
           variants={itemVariants}
         >
-          <motion.h1 
+          <motion.h1
             className="text-3xl font-bold text-white mb-6"
             variants={itemVariants}
           >
@@ -196,7 +227,7 @@ export default function CreateEventPage() {
           </motion.h1>
 
           {error && (
-            <motion.div 
+            <motion.div
               className="bg-red-900/50 border border-red-700 text-red-300 px-4 py-3 rounded-lg mb-6"
               variants={itemVariants}
             >
@@ -205,7 +236,7 @@ export default function CreateEventPage() {
           )}
 
           {success && (
-            <motion.div 
+            <motion.div
               className="bg-green-900/50 border border-green-700 text-green-300 px-4 py-3 rounded-lg mb-6"
               variants={itemVariants}
             >
@@ -213,7 +244,7 @@ export default function CreateEventPage() {
             </motion.div>
           )}
 
-          <motion.form 
+          <motion.form
             onSubmit={handleSubmit}
             className="space-y-6"
             variants={itemVariants}
@@ -259,7 +290,9 @@ export default function CreateEventPage() {
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-gray-300 mb-1">Start Date & Time</label>
+                <label className="block text-gray-300 mb-1">
+                  Start Date & Time
+                </label>
                 <input
                   type="datetime-local"
                   name="startTime"
@@ -271,20 +304,29 @@ export default function CreateEventPage() {
               </div>
 
               <div>
-                <label className="block text-gray-300 mb-1">End Date & Time</label>
+                <label className="block text-gray-300 mb-1">
+                  End Date & Time
+                </label>
                 <input
                   type="datetime-local"
                   name="endTime"
                   value={formData.endTime}
                   onChange={handleChange}
-                  className="w-full bg-gray-700 border border-gray-600 rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-teal-500"
+                  className={`w-full bg-gray-700 border ${
+                    dateError ? "border-red-500" : "border-gray-600"
+                  } rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-teal-500`}
                   required
                 />
+                {dateError && (
+                  <p className="mt-1 text-sm text-red-400">{dateError}</p>
+                )}
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-1">Maximum Attendees</label>
+              <label className="block text-gray-300 mb-1">
+                Maximum Attendees
+              </label>
               <input
                 type="number"
                 name="maxAttendees"
@@ -298,9 +340,11 @@ export default function CreateEventPage() {
 
             <motion.button
               type="submit"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !!dateError}
               className={`w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 rounded-lg transition-colors duration-200 flex items-center justify-center ${
-                isSubmitting ? "opacity-70 cursor-not-allowed" : ""
+                isSubmitting || !!dateError
+                  ? "opacity-70 cursor-not-allowed"
+                  : ""
               }`}
               whileHover={{ scale: 1.02 }}
               whileTap={{ scale: 0.98 }}
@@ -329,7 +373,9 @@ export default function CreateEventPage() {
                   </svg>
                   Creating Event...
                 </>
-              ) : "Create Event"}
+              ) : (
+                "Create Event"
+              )}
             </motion.button>
           </motion.form>
         </motion.div>

@@ -12,6 +12,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EventDTO {
+    @SuppressWarnings("unused")
     private Long id;
     private String title;
     private String description;
