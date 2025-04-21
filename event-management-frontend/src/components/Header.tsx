@@ -96,18 +96,6 @@ const Header = () => {
               >
                 Events
               </Link>
-
-              {/* Only show Create Event button to admin users */}
-              {user?.isAdmin && (
-                <Link
-                  href="/events/create"
-                  className={`text-gray-300 hover:text-teal-400 transition-colors ${
-                    pathname === "/events/create" ? "text-teal-400" : ""
-                  }`}
-                >
-                  Create Event
-                </Link>
-              )}
             </nav>
           </div>
 
