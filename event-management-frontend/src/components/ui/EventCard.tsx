@@ -40,6 +40,27 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
   };
 
   const cardColor = getColorClass(event.title);
+  const titleGradient = getTextGradient(cardColor);
+
+  // Get text gradient based on card color
+  function getTextGradient(colorClass: string) {
+    switch (colorClass) {
+      case "from-pink-500 to-orange-400":
+        return "bg-gradient-to-r from-pink-500 to-orange-400";
+      case "from-cyan-500 to-blue-500":
+        return "bg-gradient-to-r from-cyan-500 to-blue-500";
+      case "from-indigo-500 to-purple-500":
+        return "bg-gradient-to-r from-indigo-500 to-purple-500";
+      case "from-green-500 to-emerald-500":
+        return "bg-gradient-to-r from-green-500 to-emerald-500";
+      case "from-yellow-400 to-amber-500":
+        return "bg-gradient-to-r from-yellow-400 to-amber-500";
+      case "from-red-500 to-pink-500":
+        return "bg-gradient-to-r from-red-500 to-pink-500";
+      default:
+        return "bg-gradient-to-r from-cyan-500 to-blue-500";
+    }
+  }
 
   return (
     <motion.div
@@ -75,7 +96,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
 
       <div className="p-6 flex flex-col flex-grow">
         <div className="flex justify-between items-start mb-3">
-          <h3 className="text-xl font-bold gradient-text line-clamp-2">
+          <h3 className={`text-xl font-bold text-transparent bg-clip-text ${titleGradient} line-clamp-2`}>
             {event.title}
           </h3>
           <div className="subtle-glass px-2 py-1 rounded-full text-xs font-medium text-white ml-2 whitespace-nowrap flex-shrink-0">
@@ -91,7 +112,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
           <div className="flex items-center text-text-tertiary text-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-2 text-primary-light"
+              className="h-4 w-4 mr-2 text-emerald-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -109,12 +130,12 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
                 d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
               />
             </svg>
-            <span className="truncate">{event.location}</span>
+            <span className="truncate text-emerald-200">{event.location}</span>
           </div>
           <div className="flex items-center text-text-tertiary text-sm">
             <svg
               xmlns="http://www.w3.org/2000/svg"
-              className="h-4 w-4 mr-2 text-primary-light"
+              className="h-4 w-4 mr-2 text-blue-400"
               fill="none"
               viewBox="0 0 24 24"
               stroke="currentColor"
@@ -126,7 +147,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
                 d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
               />
             </svg>
-            {formattedDate}
+            <span className="text-blue-200">{formattedDate}</span>
           </div>
 
           <div>
@@ -134,7 +155,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
               <div className="flex items-center">
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
-                  className="h-4 w-4 mr-2 text-primary-light"
+                  className="h-4 w-4 mr-2 text-purple-400"
                   fill="none"
                   viewBox="0 0 24 24"
                   stroke="currentColor"
@@ -146,24 +167,24 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
                     d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
                   />
                 </svg>
-                <span>
+                <span className="text-purple-200">
                   {event.registrationCount}/{event.maxAttendees}
                 </span>
               </div>
               <span
                 className={`text-xs font-semibold ${
-                  event.isFull ? "text-error" : "text-green-400"
+                  event.isFull ? "text-rose-400" : "text-green-400"
                 }`}
               >
                 {event.isFull ? "Full" : "Available"}
               </span>
             </div>
-            <div className="w-full bg-surface/50 rounded-full h-1.5">
+            <div className="w-full bg-gray-700/50 rounded-full h-1.5">
               <div
                 className={`h-1.5 rounded-full ${
                   event.isFull
-                    ? "bg-error"
-                    : "bg-gradient-to-r from-primary to-secondary"
+                    ? "bg-rose-500"
+                    : `bg-gradient-to-r ${cardColor}`
                 }`}
                 style={{
                   width: `${Math.min(
@@ -178,7 +199,7 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
 
         <Link href={`/events/${event.id}`} className="w-full">
           <motion.button
-            className="w-full bg-gradient-to-r from-primary to-secondary hover:from-primary-light hover:to-secondary-light text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 cursor-pointer"
+            className={`w-full bg-gradient-to-r ${cardColor} text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 cursor-pointer`}
             whileHover={{
               scale: 1.03,
               boxShadow: "0 5px 10px rgba(0, 0, 0, 0.2)",
