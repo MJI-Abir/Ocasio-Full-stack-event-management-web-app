@@ -148,12 +148,18 @@ export default function CreateEventPage() {
       }, 2000);
     } catch (err: unknown) {
       console.error("Error creating event:", err);
-      
+
       if (axios.isAxiosError(err) && err.response) {
         if (err.response.status === 403) {
-          setError("You don't have permission to create events. Only admins can create events.");
+          setError(
+            "You don't have permission to create events. Only admins can create events."
+          );
         } else if (err.response.data) {
-          setError(typeof err.response.data === 'string' ? err.response.data : 'An error occurred');
+          setError(
+            typeof err.response.data === "string"
+              ? err.response.data
+              : "An error occurred"
+          );
         }
       } else {
         setError("Failed to create event. Please try again.");
