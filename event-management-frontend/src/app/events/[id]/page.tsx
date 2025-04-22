@@ -11,6 +11,9 @@ import Link from "next/link";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EventImageCarousel from "@/components/ui/EventImageCarousel";
+import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
+import { useScrollAnimation } from '@/hooks/animation/useScrollAnimation';
+import { fadeUpVariants, fadeInVariants, fadeLeftVariants, fadeRightVariants } from '@/hooks/animation/animationVariants';
 
 export default function EventDetailsPage() {
   const params = useParams();
@@ -488,139 +491,163 @@ export default function EventDetailsPage() {
         {/* Event Details */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
-          <motion.div
-            className="lg:col-span-2 space-y-8"
-            variants={itemVariants}
-          >
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              <h2 className="text-2xl font-bold text-white mb-4">About</h2>
-              <p className="text-gray-300">{event.description}</p>
-            </div>
+          <div className="lg:col-span-2 space-y-8">
+            <AnimateOnScroll 
+              duration={0.7}
+              threshold={0.1}
+              direction="up"
+            >
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h2 className="text-2xl font-bold text-white mb-4">About</h2>
+                <p className="text-gray-300">{event.description}</p>
+              </div>
+            </AnimateOnScroll>
 
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              <h2 className="text-2xl font-bold text-white mb-4">
-                Event Details
-              </h2>
-              <div className="space-y-4">
-                <div className="flex items-center text-gray-300">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-3 text-teal-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                    />
-                  </svg>
-                  <span>
-                    {new Date(event.startTime).toLocaleTimeString()} -{" "}
-                    {new Date(event.endTime).toLocaleTimeString()}
-                  </span>
-                </div>
-                <div className="flex items-center text-gray-300">
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-5 w-5 mr-3 text-teal-400"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
-                    />
-                  </svg>
-                  <span>
-                    {event.registrationCount} / {event.maxAttendees} attendees
-                  </span>
+            <AnimateOnScroll 
+              duration={0.7}
+              delay={200}
+              threshold={0.1}
+              direction="up"
+            >
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  Event Details
+                </h2>
+                <div className="space-y-4">
+                  <div className="flex items-center text-gray-300">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-3 text-teal-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                      />
+                    </svg>
+                    <span>
+                      {new Date(event.startTime).toLocaleTimeString()} -{" "}
+                      {new Date(event.endTime).toLocaleTimeString()}
+                    </span>
+                  </div>
+                  <div className="flex items-center text-gray-300">
+                    <svg
+                      xmlns="http://www.w3.org/2000/svg"
+                      className="h-5 w-5 mr-3 text-teal-400"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                      stroke="currentColor"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                      />
+                    </svg>
+                    <span>
+                      {event.registrationCount} / {event.maxAttendees} attendees
+                    </span>
+                  </div>
                 </div>
               </div>
-            </div>
-          </motion.div>
+            </AnimateOnScroll>
+          </div>
 
           {/* Sidebar */}
-          <motion.div className="space-y-8" variants={itemVariants}>
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              <h2 className="text-2xl font-bold text-white mb-4">Organizer</h2>
-              <div className="flex items-center">
-                <div className="w-12 h-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold">
-                  {event.creator.name.charAt(0)}
-                </div>
-                <div className="ml-4">
-                  <h3 className="text-white font-medium">
-                    {event.creator.name}
-                  </h3>
-                  <p className="text-gray-400 text-sm">{event.creator.email}</p>
+          <div className="space-y-8">
+            <AnimateOnScroll 
+              duration={0.7}
+              delay={100}
+              threshold={0.1}
+              direction="left"
+            >
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h2 className="text-2xl font-bold text-white mb-4">Organizer</h2>
+                <div className="flex items-center">
+                  <div className="w-12 h-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold">
+                    {event.creator.name.charAt(0)}
+                  </div>
+                  <div className="ml-4">
+                    <h3 className="text-white font-medium">
+                      {event.creator.name}
+                    </h3>
+                    <p className="text-gray-400 text-sm">{event.creator.email}</p>
+                  </div>
                 </div>
               </div>
-            </div>
+            </AnimateOnScroll>
 
-            <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-              <h2 className="text-2xl font-bold text-white mb-4">
-                Share Event
-              </h2>
-              <div className="flex space-x-4">
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 rounded-full bg-gray-700 hover:bg-blue-600 flex items-center justify-center transition-colors duration-200 cursor-pointer"
-                  aria-label="Share on Facebook"
-                >
-                  <svg
-                    className="h-5 w-5 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
+            <AnimateOnScroll 
+              duration={0.7}
+              delay={300}
+              threshold={0.1}
+              direction="left"
+            >
+              <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  Share Event
+                </h2>
+                <div className="flex space-x-4">
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-10 h-10 rounded-full bg-gray-700 hover:bg-blue-600 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                    aria-label="Share on Facebook"
                   >
-                    <path
-                      fillRule="evenodd"
-                      d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </motion.button>
+                    <svg
+                      className="h-5 w-5 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M22 12c0-5.523-4.477-10-10-10S2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
+                  </motion.button>
 
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 rounded-full bg-gray-700 hover:bg-sky-500 flex items-center justify-center transition-colors duration-200 cursor-pointer"
-                  aria-label="Share on Twitter"
-                >
-                  <svg
-                    className="h-5 w-5 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-10 h-10 rounded-full bg-gray-700 hover:bg-sky-500 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                    aria-label="Share on Twitter"
                   >
-                    <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
-                  </svg>
-                </motion.button>
+                    <svg
+                      className="h-5 w-5 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path d="M8.29 20.251c7.547 0 11.675-6.253 11.675-11.675 0-.178 0-.355-.012-.53A8.348 8.348 0 0022 5.92a8.19 8.19 0 01-2.357.646 4.118 4.118 0 001.804-2.27 8.224 8.224 0 01-2.605.996 4.107 4.107 0 00-6.993 3.743 11.65 11.65 0 01-8.457-4.287 4.106 4.106 0 001.27 5.477A4.072 4.072 0 012.8 9.713v.052a4.105 4.105 0 003.292 4.022 4.095 4.095 0 01-1.853.07 4.108 4.108 0 003.834 2.85A8.233 8.233 0 012 18.407a11.616 11.616 0 006.29 1.84" />
+                    </svg>
+                  </motion.button>
 
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  className="w-10 h-10 rounded-full bg-gray-700 hover:bg-blue-700 flex items-center justify-center transition-colors duration-200 cursor-pointer"
-                  aria-label="Share on LinkedIn"
-                >
-                  <svg
-                    className="h-5 w-5 text-white"
-                    fill="currentColor"
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    className="w-10 h-10 rounded-full bg-gray-700 hover:bg-blue-700 flex items-center justify-center transition-colors duration-200 cursor-pointer"
+                    aria-label="Share on LinkedIn"
                   >
-                    <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
-                  </svg>
-                </motion.button>
+                    <svg
+                      className="h-5 w-5 text-white"
+                      fill="currentColor"
+                      viewBox="0 0 24 24"
+                      aria-hidden="true"
+                    >
+                      <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" />
+                    </svg>
+                  </motion.button>
+                </div>
               </div>
-            </div>
-          </motion.div>
+            </AnimateOnScroll>
+          </div>
         </div>
 
         {/* Subtle Cancel Registration button */}

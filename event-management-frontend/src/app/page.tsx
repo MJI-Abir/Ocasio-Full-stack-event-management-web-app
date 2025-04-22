@@ -14,6 +14,8 @@ import FaqItem from "@/components/ui/FaqItem";
 import Cookies from "js-cookie";
 import Footer from "@/components/Footer";
 import { User } from "@/types/auth";
+import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
+import { containerVariants, itemVariants } from "@/hooks/animation/animationVariants";
 
 export default function HomePage() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
@@ -58,8 +60,8 @@ export default function HomePage() {
       try {
         // Get JWT from cookies instead of localStorage
         const token = Cookies.get("token");
-        console.log("Token from cookies:", token);
-        console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
+        // console.log("Token from cookies:", token);
+        // console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
 
         if (!token) {
           // If no token, redirect to login
@@ -367,7 +369,12 @@ export default function HomePage() {
         </motion.section>
 
         {/* Featured Events Section */}
-        <motion.section className="mb-20" variants={itemVariants}>
+        <AnimateOnScroll 
+          className="mb-20" 
+          threshold={0.05}
+          direction="up"
+          duration={0.7}
+        >
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-white">Featured Events</h2>
             <Link
@@ -391,10 +398,16 @@ export default function HomePage() {
           </div>
 
           <EventGrid events={featuredEvents} isLoading={false} />
-        </motion.section>
+        </AnimateOnScroll>
 
         {/* Upcoming Events Section */}
-        <motion.section className="mb-20" variants={itemVariants}>
+        <AnimateOnScroll 
+          className="mb-20"
+          threshold={0.05}
+          direction="up"
+          delay={100}
+          duration={0.8}
+        >
           <div className="flex items-center justify-between mb-8">
             <h2 className="text-3xl font-bold text-white">Upcoming Events</h2>
             <div className="flex items-center space-x-2">
@@ -416,11 +429,22 @@ export default function HomePage() {
               onPageChange={setPage}
             />
           )}
-        </motion.section>
+        </AnimateOnScroll>
 
         {/* FAQ Section */}
-        <motion.section className="mb-20" variants={itemVariants}>
-          <h2 className="text-3xl font-bold text-white mb-8">FAQ</h2>
+        <motion.section 
+          className="mb-20" 
+          initial="hidden"
+          whileInView="visible"
+          viewport={{ once: true, amount: 0.05 }}
+          variants={containerVariants}
+        >
+          <motion.h2 
+            className="text-3xl font-bold text-white mb-8"
+            variants={itemVariants}
+          >
+            FAQ
+          </motion.h2>
 
           <div className="space-y-4">
             {[
@@ -453,9 +477,7 @@ export default function HomePage() {
               <motion.div
                 key={index}
                 className="bg-gray-800 border border-gray-700 rounded-xl overflow-hidden"
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
+                variants={itemVariants}
               >
                 <FaqItem question={faq.question} answer={faq.answer} />
               </motion.div>
@@ -464,9 +486,12 @@ export default function HomePage() {
         </motion.section>
 
         {/* Newsletter Section */}
-        <motion.section
+        <AnimateOnScroll
           className="bg-gradient-to-r from-gray-800 to-gray-900 border border-gray-800 rounded-2xl p-8 md:p-12"
-          variants={itemVariants}
+          direction="up"
+          distance={40}
+          duration={0.9}
+          delay={200}
         >
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-3xl font-bold text-white mb-4">Stay Updated</h2>
@@ -490,7 +515,7 @@ export default function HomePage() {
               </motion.button>
             </div>
           </div>
-        </motion.section>
+        </AnimateOnScroll>
       </main>
 
       <Footer />

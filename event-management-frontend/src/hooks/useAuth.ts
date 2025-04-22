@@ -7,7 +7,7 @@ import {
   isAuthenticated,
 } from "@/services/auth";
 import { LoginRequest, RegisterRequest } from "@/types/auth";
-import axios, { AxiosError } from "axios";
+import { AxiosError } from "axios";
 
 export default function useAuth() {
   const [loading, setLoading] = useState<boolean>(false);
@@ -29,7 +29,7 @@ export default function useAuth() {
     } catch (err: unknown) {
       const axiosError = err as AxiosError<{ message?: string }>;
       setError(
-        axiosError.response?.data?.message ||
+        axiosError.response?.data?.message ??
           "Login failed. Please check your credentials."
       );
     } finally {
@@ -47,7 +47,7 @@ export default function useAuth() {
     } catch (err: unknown) {
       const axiosError = err as AxiosError<{ message?: string }>;
       setError(
-        axiosError.response?.data?.message ||
+        axiosError.response?.data?.message ??
           "Registration failed. Please try again."
       );
     } finally {

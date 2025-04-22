@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Event, PagedResponse } from "@/services/event";
@@ -8,12 +8,11 @@ import Header from "@/components/Header";
 import EventGrid from "@/components/ui/EventGrid";
 import Pagination from "@/components/ui/Pagination";
 import Cookies from "js-cookie";
-import { useRouter } from "next/navigation";
 import Footer from "@/components/Footer";
 
 export default function SearchResultsPage() {
   const searchParams = useSearchParams();
-  const keyword = searchParams.get("keyword") || "";
+  const keyword = searchParams.get("keyword") ?? "";
   const [events, setEvents] = useState<Event[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -27,8 +26,6 @@ export default function SearchResultsPage() {
       setIsLoading(true);
       try {
         const token = Cookies.get("token");
-        console.log("Token from cookies:", token);
-        console.log("API URL:", process.env.NEXT_PUBLIC_API_URL);
 
         if (!token) {
           console.log("No token found, redirecting to login");
