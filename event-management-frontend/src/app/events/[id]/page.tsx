@@ -11,9 +11,7 @@ import Link from "next/link";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import EventImageCarousel from "@/components/ui/EventImageCarousel";
-import AnimateOnScroll from '@/components/ui/AnimateOnScroll';
-import { useScrollAnimation } from '@/hooks/animation/useScrollAnimation';
-import { fadeUpVariants, fadeInVariants, fadeLeftVariants, fadeRightVariants } from '@/hooks/animation/animationVariants';
+import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
 
 export default function EventDetailsPage() {
   const params = useParams();
@@ -95,7 +93,8 @@ export default function EventDetailsPage() {
       // Check if user is registered for this specific event
       if (response.data && response.data.content) {
         const isRegistered = response.data.content.some(
-          (registration: { event: { id: number } }) => registration.event.id === eventId
+          (registration: { event: { id: number } }) =>
+            registration.event.id === eventId
         );
         setIsUserRegistered(isRegistered);
       }
@@ -396,13 +395,13 @@ export default function EventDetailsPage() {
                   whileTap={isUserRegistered ? {} : { scale: 0.95 }}
                   onClick={isUserRegistered ? undefined : handleRegister}
                   disabled={isRegistering || event.isFull || isUserRegistered}
-                  className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${
-                    (() => {
-                      if (event.isFull) return "bg-gray-700 text-gray-400 cursor-not-allowed";
-                      if (isUserRegistered) return "bg-teal-900 text-teal-200 cursor-not-allowed";
-                      return "bg-teal-500 hover:bg-teal-600 text-white cursor-pointer";
-                    })()
-                  }`}
+                  className={`px-6 py-3 rounded-lg font-medium transition-colors duration-200 ${(() => {
+                    if (event.isFull)
+                      return "bg-gray-700 text-gray-400 cursor-not-allowed";
+                    if (isUserRegistered)
+                      return "bg-teal-900 text-teal-200 cursor-not-allowed";
+                    return "bg-teal-500 hover:bg-teal-600 text-white cursor-pointer";
+                  })()}`}
                 >
                   {isRegistering ? (
                     <span className="flex items-center">
@@ -492,18 +491,14 @@ export default function EventDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-8">
-            <AnimateOnScroll 
-              duration={0.7}
-              threshold={0.1}
-              direction="up"
-            >
+            <AnimateOnScroll duration={0.7} threshold={0.1} direction="up">
               <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
                 <h2 className="text-2xl font-bold text-white mb-4">About</h2>
                 <p className="text-gray-300">{event.description}</p>
               </div>
             </AnimateOnScroll>
 
-            <AnimateOnScroll 
+            <AnimateOnScroll
               duration={0.7}
               delay={200}
               threshold={0.1}
@@ -560,14 +555,16 @@ export default function EventDetailsPage() {
 
           {/* Sidebar */}
           <div className="space-y-8">
-            <AnimateOnScroll 
+            <AnimateOnScroll
               duration={0.7}
               delay={100}
               threshold={0.1}
               direction="left"
             >
               <div className="bg-gray-800 rounded-xl p-6 border border-gray-700">
-                <h2 className="text-2xl font-bold text-white mb-4">Organizer</h2>
+                <h2 className="text-2xl font-bold text-white mb-4">
+                  Organizer
+                </h2>
                 <div className="flex items-center">
                   <div className="w-12 h-12 rounded-full bg-teal-500 flex items-center justify-center text-white font-bold">
                     {event.creator.name.charAt(0)}
@@ -576,13 +573,15 @@ export default function EventDetailsPage() {
                     <h3 className="text-white font-medium">
                       {event.creator.name}
                     </h3>
-                    <p className="text-gray-400 text-sm">{event.creator.email}</p>
+                    <p className="text-gray-400 text-sm">
+                      {event.creator.email}
+                    </p>
                   </div>
                 </div>
               </div>
             </AnimateOnScroll>
 
-            <AnimateOnScroll 
+            <AnimateOnScroll
               duration={0.7}
               delay={300}
               threshold={0.1}

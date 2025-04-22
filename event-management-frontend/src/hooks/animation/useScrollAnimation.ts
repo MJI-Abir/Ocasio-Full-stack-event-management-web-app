@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 interface ScrollAnimationOptions {
   /**
@@ -6,30 +6,30 @@ interface ScrollAnimationOptions {
    * @default 0.1
    */
   threshold?: number;
-  
+
   /**
    * Delay before the animation starts (in milliseconds)
    * @default 0
    */
   delay?: number;
-  
+
   /**
    * Root margin for the Intersection Observer
    * @default "0px"
    */
   rootMargin?: string;
-  
+
   /**
    * Whether to trigger the animation only once
    * @default false
    */
   triggerOnce?: boolean;
-  
+
   /**
    * Animation direction - useful for animations that need directional context
    * @default "up"
    */
-  direction?: 'up' | 'down' | 'left' | 'right';
+  direction?: "up" | "down" | "left" | "right";
 }
 
 /**
@@ -41,27 +41,27 @@ export function useScrollAnimation({
   delay = 0,
   rootMargin = "0px",
   triggerOnce = false, // Changed default to false so animation happens every time
-  direction = 'up'
+  direction = "up",
 }: ScrollAnimationOptions = {}) {
   // Reference to the element we want to observe
   const elementRef = useRef<HTMLElement | null>(null);
-  
+
   // Animation state - controls visibility and animation
   const [isVisible, setIsVisible] = useState(false);
-  
+
   // State to track whether the animation has been triggered
   const [hasAnimated, setHasAnimated] = useState(false);
-  
+
   useEffect(() => {
     const currentElement = elementRef.current;
-    
+
     // Skip if the element doesn't exist or animation has been triggered once
     if (!currentElement || (triggerOnce && hasAnimated)) return;
 
     // Create an observer instance
     const observer = new IntersectionObserver(
       (entries) => {
-        entries.forEach(entry => {
+        entries.forEach((entry) => {
           // If element is in view
           if (entry.isIntersecting) {
             // Delay the animation if specified
@@ -71,7 +71,7 @@ export function useScrollAnimation({
                 setHasAnimated(true);
               }
             }, delay);
-            
+
             // If we only need to trigger once, unobserve after triggering
             if (triggerOnce) {
               observer.unobserve(currentElement);
@@ -82,9 +82,9 @@ export function useScrollAnimation({
           }
         });
       },
-      { 
+      {
         rootMargin,
-        threshold
+        threshold,
       }
     );
 
@@ -104,6 +104,6 @@ export function useScrollAnimation({
     ref: elementRef,
     isVisible,
     hasAnimated,
-    direction
+    direction,
   };
 }

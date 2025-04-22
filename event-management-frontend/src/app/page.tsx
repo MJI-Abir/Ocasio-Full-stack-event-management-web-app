@@ -15,7 +15,10 @@ import Cookies from "js-cookie";
 import Footer from "@/components/Footer";
 import { User } from "@/types/auth";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
-import { containerVariants, itemVariants } from "@/hooks/animation/animationVariants";
+import {
+  containerVariants,
+  itemVariants,
+} from "@/hooks/animation/animationVariants";
 
 export default function HomePage() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);
@@ -369,8 +372,8 @@ export default function HomePage() {
         </motion.section>
 
         {/* Featured Events Section */}
-        <AnimateOnScroll 
-          className="mb-20" 
+        <AnimateOnScroll
+          className="mb-20"
           threshold={0.05}
           direction="up"
           duration={0.7}
@@ -401,7 +404,7 @@ export default function HomePage() {
         </AnimateOnScroll>
 
         {/* Upcoming Events Section */}
-        <AnimateOnScroll 
+        <AnimateOnScroll
           className="mb-20"
           threshold={0.05}
           direction="up"
@@ -432,14 +435,14 @@ export default function HomePage() {
         </AnimateOnScroll>
 
         {/* FAQ Section */}
-        <motion.section 
-          className="mb-20" 
+        <motion.section
+          className="mb-20"
           initial="hidden"
           whileInView="visible"
           viewport={{ once: true, amount: 0.05 }}
           variants={containerVariants}
         >
-          <motion.h2 
+          <motion.h2
             className="text-3xl font-bold text-white mb-8"
             variants={itemVariants}
           >

@@ -3,7 +3,7 @@
  * These can be used with our AnimateOnScroll component or directly with motion components
  */
 
-// Framer Motion compatible easing functions 
+// Framer Motion compatible easing functions
 const easings = {
   easeOut: [0, 0, 0.58, 1],
   easeIn: [0.42, 0, 1, 1],
@@ -14,93 +14,93 @@ const easings = {
 // Basic fade animations
 export const fadeInVariants = {
   hidden: { opacity: 0 },
-  visible: { 
+  visible: {
     opacity: 1,
     transition: {
       duration: 0.6,
-      ease: easings.easeOut
-    }
-  }
+      ease: easings.easeOut,
+    },
+  },
 };
 
 // Fade up animation (popular choice)
 export const fadeUpVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
-    y: 30
+    y: 30,
   },
-  visible: { 
+  visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
-      ease: easings.easeOut
-    }
-  }
+      ease: easings.easeOut,
+    },
+  },
 };
 
 // Fade down animation
 export const fadeDownVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
-    y: -30
+    y: -30,
   },
-  visible: { 
+  visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.6,
-      ease: easings.easeOut
-    }
-  }
+      ease: easings.easeOut,
+    },
+  },
 };
 
 // Fade left animation
 export const fadeLeftVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
-    x: 30
+    x: 30,
   },
-  visible: { 
+  visible: {
     opacity: 1,
     x: 0,
     transition: {
       duration: 0.6,
-      ease: easings.easeOut
-    }
-  }
+      ease: easings.easeOut,
+    },
+  },
 };
 
 // Fade right animation
 export const fadeRightVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
-    x: -30
+    x: -30,
   },
-  visible: { 
+  visible: {
     opacity: 1,
     x: 0,
     transition: {
       duration: 0.6,
-      ease: easings.easeOut
-    }
-  }
+      ease: easings.easeOut,
+    },
+  },
 };
 
 // Scale up from center with fade
 export const scaleUpVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
-    scale: 0.8
+    scale: 0.8,
   },
-  visible: { 
+  visible: {
     opacity: 1,
     scale: 1,
     transition: {
       duration: 0.6,
-      ease: easings.easeOut
-    }
-  }
+      ease: easings.easeOut,
+    },
+  },
 };
 
 // Stagger children animations
@@ -110,40 +110,40 @@ export const containerVariants = {
     opacity: 1,
     transition: {
       staggerChildren: 0.1,
-      when: "beforeChildren"
-    }
-  }
+      when: "beforeChildren",
+    },
+  },
 };
 
 // For use with containerVariants
 export const itemVariants = {
-  hidden: { 
+  hidden: {
     opacity: 0,
-    y: 20
+    y: 20,
   },
-  visible: { 
+  visible: {
     opacity: 1,
     y: 0,
     transition: {
       duration: 0.5,
-      ease: easings.easeOut
-    }
-  }
+      ease: easings.easeOut,
+    },
+  },
 };
 
 // Slide in from edge of screen
 export const slideInVariants = {
   hidden: {
-    x: "-100vw"
+    x: "-100vw",
   },
   visible: {
     x: 0,
     transition: {
       type: "spring",
       stiffness: 80,
-      damping: 15
-    }
-  }
+      damping: 15,
+    },
+  },
 };
 
 // Rotating entry animation
@@ -151,7 +151,7 @@ export const rotateInVariants = {
   hidden: {
     opacity: 0,
     rotate: 15,
-    scale: 0.9
+    scale: 0.9,
   },
   visible: {
     opacity: 1,
@@ -159,16 +159,16 @@ export const rotateInVariants = {
     scale: 1,
     transition: {
       duration: 0.7,
-      ease: easings.easeOut
-    }
-  }
+      ease: easings.easeOut,
+    },
+  },
 };
 
 /**
  * Function to generate custom fade animation variants with specified parameters
  */
 export const createFadeAnimation = (
-  direction: 'up' | 'down' | 'left' | 'right' | 'none' = 'up',
+  direction: "up" | "down" | "left" | "right" | "none" = "up",
   distance = 30,
   duration = 0.6,
   delay = 0,
@@ -177,16 +177,16 @@ export const createFadeAnimation = (
   // Define directional movement
   let directionProps = {};
   switch (direction) {
-    case 'up':
+    case "up":
       directionProps = { y: distance };
       break;
-    case 'down':
+    case "down":
       directionProps = { y: -distance };
       break;
-    case 'left':
+    case "left":
       directionProps = { x: distance };
       break;
-    case 'right':
+    case "right":
       directionProps = { x: -distance };
       break;
     default:
@@ -196,7 +196,7 @@ export const createFadeAnimation = (
   return {
     hidden: {
       opacity: 0,
-      ...directionProps
+      ...directionProps,
     },
     visible: {
       opacity: 1,
@@ -205,8 +205,8 @@ export const createFadeAnimation = (
       transition: {
         duration,
         delay,
-        ease
-      }
-    }
+        ease,
+      },
+    },
   };
 };
