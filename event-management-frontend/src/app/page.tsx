@@ -15,10 +15,6 @@ import Cookies from "js-cookie";
 import Footer from "@/components/Footer";
 import { User } from "@/types/auth";
 import AnimateOnScroll from "@/components/ui/AnimateOnScroll";
-import {
-  containerVariants,
-  itemVariants,
-} from "@/hooks/animation/animationVariants";
 
 export default function HomePage() {
   const [upcomingEvents, setUpcomingEvents] = useState<Event[]>([]);

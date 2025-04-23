@@ -162,3 +162,31 @@ export const searchEvents = async (
     return mockSearchEvents(keyword, page, size);
   }
 };
+
+// Interface for Unsplash keyword image generation
+export interface KeywordImageRequest {
+  keyword: string;
+  count?: number;
+}
+
+/**
+ * Generate event images using Unsplash based on a keyword
+ * @param eventId The ID of the event to generate images for
+ * @param keywordRequest The keyword and optional count (default 4)
+ * @returns Array of generated image DTOs
+ */
+export const generateImagesFromKeyword = async (
+  eventId: number,
+  keywordRequest: KeywordImageRequest
+): Promise<ImageDTO[]> => {
+  try {
+    const response: AxiosResponse<ImageDTO[]> = await api.post(
+      `/events/${eventId}/images/generate`,
+      keywordRequest
+    );
+    return response.data;
+  } catch (error) {
+    handleApiError(error);
+    throw error;
+  }
+};

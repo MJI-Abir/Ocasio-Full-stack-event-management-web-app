@@ -20,10 +20,12 @@ import com.example.event_management_api.dto.BatchImageUploadDTO;
 import com.example.event_management_api.dto.DtoMapper;
 import com.example.event_management_api.dto.ImageCreationDTO;
 import com.example.event_management_api.dto.ImageDTO;
+import com.example.event_management_api.dto.KeywordImageRequestDTO;
 import com.example.event_management_api.model.Event;
 import com.example.event_management_api.model.Image;
 import com.example.event_management_api.service.EventService;
 import com.example.event_management_api.service.ImageService;
+import com.example.event_management_api.service.UnsplashService;
 
 import jakarta.validation.Valid;
 
@@ -34,11 +36,16 @@ public class ImageController {
     private final ImageService imageService;
     private final EventService eventService;
     private final DtoMapper dtoMapper;
+    private final UnsplashService unsplashService;
 
-    public ImageController(ImageService imageService, EventService eventService, DtoMapper dtoMapper) {
+    public ImageController(ImageService imageService, 
+                         EventService eventService, 
+                         DtoMapper dtoMapper,
+                         UnsplashService unsplashService) {
         this.imageService = imageService;
         this.eventService = eventService;
         this.dtoMapper = dtoMapper;
+        this.unsplashService = unsplashService;
     }
 
     @GetMapping
@@ -195,5 +202,64 @@ public class ImageController {
         
         imageService.deleteAllImagesByEventId(eventId);
         return ResponseEntity.noContent().build();
+    }
+    
+    /**
+     * Generate random images from Unsplash based on a keyword
+     * 
+     * @param eventId The ID of the event to add images to
+     * @param keywordRequest The keyword and count of images to generate
+     * @return A list of created image DTOs
+     */
+    @PostMapping("/generate")
+    public ResponseEntity<Object> generateImagesFromKeyword(
+            @PathVariable Long eventId,
+            @Valid @RequestBody KeywordImageRequestDTO keywordRequest) {
+        
+        Optional<Event> eventOpt = eventService.getEventById(eventId);
+        if (eventOpt.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        // Check if adding these images would exceed the limit of 4
+        long currentImageCount = imageService.getImageCountForEvent(eventId);
+        int newImagesCount = keywordRequest.getCount();
+        
+        if (currentImageCount + newImagesCount > 4) {
+            return ResponseEntity
+                    .badRequest()
+                    .body("Cannot add " + newImagesCount + " images as it would exceed the maximum of 4 images per event. " +
+                          "Current count: " + currentImageCount);
+        }
+
+        Event event = eventOpt.get();
+        
+        try {
+            // Get random images from Unsplash
+            List<ImageCreationDTO> unsplashImages = unsplashService.getRandomImages(
+                keywordRequest.getKeyword(), 
+                keywordRequest.getCount()
+            );
+            
+            List<ImageDTO> createdImages = new ArrayList<>();
+            
+            // Save the images to the database
+            for (ImageCreationDTO imageDTO : unsplashImages) {
+                Image image = new Image();
+                image.setImageUrl(imageDTO.getImageUrl());
+                image.setDisplayOrder(imageDTO.getDisplayOrder());
+                image.setCreatedAt(LocalDateTime.now());
+                image.setEvent(event);
+                
+                Image savedImage = imageService.createImage(image);
+                createdImages.add(dtoMapper.toImageDto(savedImage));
+            }
+            
+            return new ResponseEntity<>(createdImages, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return ResponseEntity
+                    .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body("Failed to generate images: " + e.getMessage());
+        }
     }
 }

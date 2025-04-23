@@ -1,6 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
-import { formatDistanceToNow, format } from "date-fns";
+import { formatDistanceToNow, format, isPast, addDays } from "date-fns";
 import Link from "next/link";
 import Image from "next/image";
 import { Event } from "@/services/event";
@@ -14,6 +14,19 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
   const startDate = new Date(event.startTime);
   const formattedDate = format(startDate, "MMM d, yyyy");
   const timeFromNow = formatDistanceToNow(startDate, { addSuffix: true });
+
+  // Check if the event date has already passed
+  const isEventPast = isPast(startDate);
+
+  // Check if the event is happening very soon (within next 7 days)
+  const now = new Date();
+  const isEventSoon = startDate > now && startDate <= addDays(now, 7);
+
+  // Check if the event is full (when registration count equals max attendees)
+  const isEventFull = event.registrationCount >= event.maxAttendees;
+
+  // Determine event availability status
+  const isEventAvailable = !isEventPast && !isEventFull;
 
   // Get the first image if available, otherwise use a placeholder
   const imageUrl =
@@ -62,6 +75,34 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
     }
   }
 
+  // Get event status text and color
+  const getEventStatus = () => {
+    if (isEventPast) {
+      return {
+        text: "Passed",
+        color: "text-gray-400",
+      };
+    } else if (isEventFull) {
+      return {
+        text: "Full",
+        color: "text-rose-400",
+      };
+    } else if (isEventSoon) {
+      return {
+        text: "Upcoming",
+        color: "text-amber-400",
+      };
+    } else {
+      return {
+        text: "Scheduled",
+        color: "text-blue-400",
+      };
+    }
+  };
+
+  // Get the status for display
+  const eventStatus = getEventStatus();
+
   return (
     <motion.div
       className="glass-card rounded-xl overflow-hidden shadow-lg border border-white/10 card-hover h-full flex flex-col"
@@ -92,6 +133,20 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
           className="object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
         />
+        {isEventPast && (
+          <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
+            <span className="bg-gray-900/80 px-3 py-1.5 rounded-full text-sm font-medium text-white">
+              Event Ended
+            </span>
+          </div>
+        )}
+        {isEventFull && !isEventPast && (
+          <div className="absolute inset-0 bg-black/30 flex items-center justify-center">
+            <span className="bg-rose-900/80 px-3 py-1.5 rounded-full text-sm font-medium text-white">
+              Registration Full
+            </span>
+          </div>
+        )}
       </div>
 
       <div className="p-6 flex flex-col flex-grow">
@@ -173,18 +228,18 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
                   {event.registrationCount}/{event.maxAttendees}
                 </span>
               </div>
-              <span
-                className={`text-xs font-semibold ${
-                  event.isFull ? "text-rose-400" : "text-green-400"
-                }`}
-              >
-                {event.isFull ? "Full" : "Available"}
+              <span className={`text-xs font-semibold ${eventStatus.color}`}>
+                {eventStatus.text}
               </span>
             </div>
             <div className="w-full bg-gray-700/50 rounded-full h-1.5">
               <div
                 className={`h-1.5 rounded-full ${
-                  event.isFull ? "bg-rose-500" : `bg-gradient-to-r ${cardColor}`
+                  !isEventAvailable
+                    ? isEventPast
+                      ? "bg-gray-500"
+                      : "bg-rose-500"
+                    : `bg-gradient-to-r ${cardColor}`
                 }`}
                 style={{
                   width: `${Math.min(
@@ -199,12 +254,20 @@ const EventCard: React.FC<EventCardProps> = ({ event, index }) => {
 
         <Link href={`/events/${event.id}`} className="w-full">
           <motion.button
-            className={`w-full bg-gradient-to-r ${cardColor} text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 cursor-pointer`}
-            whileHover={{
-              scale: 1.03,
-              boxShadow: "0 5px 10px rgba(0, 0, 0, 0.2)",
-            }}
-            whileTap={{ scale: 0.97 }}
+            className={`w-full ${
+              isEventAvailable ? `bg-gradient-to-r ${cardColor}` : "bg-gray-700"
+            } text-white font-medium py-2 px-4 rounded-lg transition-all duration-300 ${
+              isEventAvailable ? "cursor-pointer" : "cursor-default opacity-80"
+            }`}
+            whileHover={
+              isEventAvailable
+                ? {
+                    scale: 1.03,
+                    boxShadow: "0 5px 10px rgba(0, 0, 0, 0.2)",
+                  }
+                : {}
+            }
+            whileTap={isEventAvailable ? { scale: 0.97 } : {}}
           >
             View Details
           </motion.button>

@@ -6,6 +6,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+import UnsplashImagePicker from "@/components/ui/UnsplashImagePicker";
 import Cookies from "js-cookie";
 import { User } from "@/types/auth";
 
@@ -16,6 +17,11 @@ interface EventFormData {
   startTime: string;
   endTime: string;
   maxAttendees: number;
+}
+
+interface PreviewImage {
+  url: string;
+  id?: string | number;
 }
 
 export default function CreateEventPage() {
@@ -33,6 +39,9 @@ export default function CreateEventPage() {
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState<string | null>(null);
   const [dateError, setDateError] = useState<string | null>(null);
+  const [previewImages, setPreviewImages] = useState<PreviewImage[]>([]);
+  const [isLoadingImages, setIsLoadingImages] = useState(false);
+  const [createdEventId, setCreatedEventId] = useState<number | null>(null);
   const router = useRouter();
 
   // Validate dates when either startTime or endTime changes
@@ -64,17 +73,11 @@ export default function CreateEventPage() {
               },
             }
           );
-          console.log("User data received:", response.data);
-          console.log("Is admin field:", response.data.isAdmin);
-          console.log("Type of isAdmin:", typeof response.data.isAdmin);
           setUser(response.data);
 
           // Redirect non-admin users
           if (!response.data.isAdmin) {
-            console.log("User is not an admin, redirecting...");
             router.push("/");
-          } else {
-            console.log("User is an admin, staying on create page");
           }
         } catch (error) {
           console.error("Error fetching user:", error);
@@ -97,6 +100,87 @@ export default function CreateEventPage() {
       ...formData,
       [name]: value,
     });
+  };
+
+  const handleUnsplashSearch = async (keyword: string) => {
+    if (!keyword.trim()) return;
+
+    setIsLoadingImages(true);
+    setError(null);
+
+    try {
+      if (!createdEventId) {
+        // Store preview images temporarily
+        // In a real implementation, you would fetch from Unsplash directly for preview
+        setPreviewImages([
+          {
+            url: `https://source.unsplash.com/random/800x600/?${encodeURIComponent(
+              keyword
+            )}&sig=${Math.random()}`,
+          },
+          {
+            url: `https://source.unsplash.com/random/800x600/?${encodeURIComponent(
+              keyword
+            )}&sig=${Math.random() + 1}`,
+          },
+          {
+            url: `https://source.unsplash.com/random/800x600/?${encodeURIComponent(
+              keyword
+            )}&sig=${Math.random() + 2}`,
+          },
+          {
+            url: `https://source.unsplash.com/random/800x600/?${encodeURIComponent(
+              keyword
+            )}&sig=${Math.random() + 3}`,
+          },
+        ]);
+      } else {
+        // If event is already created, actually fetch from your backend
+        const token = Cookies.get("token");
+        if (!token) {
+          router.push("/login");
+          return;
+        }
+
+        const response = await axios.post(
+          `${process.env.NEXT_PUBLIC_API_URL}/events/${createdEventId}/images/generate`,
+          { keyword, count: 4 },
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+
+        // Update with actual images returned from the backend
+        setPreviewImages(
+          response.data.map((img: any) => ({
+            url: img.imageUrl,
+            id: img.id,
+          }))
+        );
+
+        setSuccess("Images added successfully!");
+
+        // Redirect to the event page after a short delay
+        setTimeout(() => {
+          router.push(`/events/${createdEventId}`);
+        }, 2000);
+      }
+    } catch (err) {
+      console.error("Error fetching images:", err);
+      if (axios.isAxiosError(err) && err.response) {
+        setError(
+          typeof err.response.data === "string"
+            ? err.response.data
+            : "An error occurred while fetching images"
+        );
+      } else {
+        setError("Failed to fetch images. Please try again.");
+      }
+    } finally {
+      setIsLoadingImages(false);
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -130,22 +214,10 @@ export default function CreateEventPage() {
         }
       );
 
-      setSuccess("Event created successfully!");
+      setSuccess("Event created successfully! You can now add images.");
+      setCreatedEventId(response.data.id);
 
-      // Reset form
-      setFormData({
-        title: "",
-        description: "",
-        location: "",
-        startTime: "",
-        endTime: "",
-        maxAttendees: 100,
-      });
-
-      // Redirect to the event page after a short delay
-      setTimeout(() => {
-        router.push(`/events/${response.data.id}`);
-      }, 2000);
+      // Don't reset the form after event creation to allow adding images
     } catch (err: unknown) {
       console.error("Error creating event:", err);
 
@@ -346,14 +418,22 @@ export default function CreateEventPage() {
 
             <motion.button
               type="submit"
-              disabled={isSubmitting || !!dateError}
+              disabled={isSubmitting || !!dateError || !!createdEventId}
               className={`w-full bg-teal-500 hover:bg-teal-600 text-white font-medium py-3 rounded-lg transition-colors duration-200 flex items-center justify-center ${
-                isSubmitting || !!dateError
+                isSubmitting || !!dateError || !!createdEventId
                   ? "opacity-70 cursor-not-allowed"
                   : ""
               }`}
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+              whileHover={
+                !(isSubmitting || !!dateError || !!createdEventId)
+                  ? { scale: 1.02 }
+                  : {}
+              }
+              whileTap={
+                !(isSubmitting || !!dateError || !!createdEventId)
+                  ? { scale: 0.98 }
+                  : {}
+              }
             >
               {isSubmitting ? (
                 <>
@@ -379,11 +459,43 @@ export default function CreateEventPage() {
                   </svg>
                   Creating Event...
                 </>
+              ) : createdEventId ? (
+                "Event Created ✓"
               ) : (
                 "Create Event"
               )}
             </motion.button>
           </motion.form>
+
+          {/* Image Section - Show only after event is created or during creation with preview */}
+          <motion.div
+            className={`mt-8 pt-8 ${
+              createdEventId ? "border-t border-gray-700" : ""
+            }`}
+            variants={itemVariants}
+          >
+            <h2 className="text-2xl font-bold text-white mb-4">Event Images</h2>
+            <p className="text-gray-400 mb-6">
+              {createdEventId
+                ? "Your event has been created. Now add some images by searching with keywords related to your event."
+                : "Preview images for your event. You'll be able to add these after creating the event."}
+            </p>
+
+            <UnsplashImagePicker
+              onKeywordSubmit={handleUnsplashSearch}
+              loading={isLoadingImages}
+              images={previewImages}
+            />
+
+            {previewImages.length > 0 && !createdEventId && (
+              <div className="mt-4 p-4 bg-gray-700/50 border border-gray-600 rounded-lg">
+                <p className="text-yellow-300 text-sm">
+                  Note: Create your event first to save these images. They are
+                  currently just previews.
+                </p>
+              </div>
+            )}
+          </motion.div>
         </motion.div>
       </main>
 

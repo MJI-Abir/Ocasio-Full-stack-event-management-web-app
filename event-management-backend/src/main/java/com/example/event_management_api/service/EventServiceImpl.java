@@ -11,16 +11,21 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.event_management_api.model.Event;
 import com.example.event_management_api.model.User;
 import com.example.event_management_api.repository.EventRepository;
+import com.example.event_management_api.repository.ImageRepository;
 import com.example.event_management_api.repository.RegistrationRepository;
 
 @Service
 public class EventServiceImpl implements EventService{
     private final EventRepository eventRepository;
     private final RegistrationRepository registrationRepository;
+    private final ImageRepository imageRepository;
 
-    public EventServiceImpl(EventRepository eventRepository, RegistrationRepository registrationRepository) {
+    public EventServiceImpl(EventRepository eventRepository, 
+                           RegistrationRepository registrationRepository,
+                           ImageRepository imageRepository) {
         this.registrationRepository = registrationRepository;
         this.eventRepository = eventRepository;
+        this.imageRepository = imageRepository;
     }
 
     // Implement the methods of the EventService interface
@@ -87,5 +92,28 @@ public class EventServiceImpl implements EventService{
             return currentRegistrations >= event.getMaxAttendees();
         }
         return false; // Event not found
+    }
+
+    @Override
+    @Transactional
+    public boolean deleteEvent(Long id) {
+        Optional<Event> eventOpt = eventRepository.findById(id);
+        if (eventOpt.isEmpty()) {
+            return false;
+        }
+        
+        try {
+            // Use native query to delete images first, bypassing Hibernate's entity management
+            imageRepository.deleteImagesByEventIdNative(id);
+            
+            // Then delete the event itself
+            eventRepository.deleteById(id);
+            return true;
+        } catch (Exception e) {
+            // Log the error for debugging purposes
+            System.err.println("Error deleting event: " + e.getMessage());
+            e.printStackTrace();
+            return false;
+        }
     }
 }
